@@ -80,8 +80,12 @@ def forecast_demand(parent_code):
     )
     model.fit(df)
     
+    # Create models directory if it doesn't exist
+    models_dir = '../models'
+    os.makedirs(models_dir, exist_ok=True)
+
     # Save the model (optional)
-    with open(f'../models/{parent_code}_model.pkl', 'wb') as f:
+    with open(os.path.join(models_dir, f'{parent_code}_model.pkl'), 'wb') as f:
         pickle.dump(model, f)
     
     # Make future dataframe for next 30 days
