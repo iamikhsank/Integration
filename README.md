@@ -111,6 +111,55 @@ cd ai_engine && python ml_forecasting.py
 - **Delivery Management**: (Dalam pengembangan)
 - **Transaction Reports**: (Dalam pengembangan)
 
+## Halaman Forecasting
+
+Halaman Forecasting menyediakan dashboard interaktif untuk memprediksi penjualan produk menggunakan AI Facebook Prophet dengan visualisasi yang komprehensif.
+
+### 🎯 Fitur Utama
+
+#### 1. **Product Selector**
+- Dropdown untuk memilih produk parent yang ingin di-forecast
+- Produk tersedia: Patung Buddha, Patung Ganesha, Patung Naga, dll.
+- Real-time update forecast saat produk berubah
+
+#### 2. **KPI Cards**
+- **Total Predicted Demand**: Total prediksi penjualan untuk 30 hari ke depan
+- **Average Confidence Range**: Rata-rata margin error prediksi
+- **Trend Analysis**: Analisis trend (Growing/Declining/Stable) dengan indikator visual
+
+#### 3. **Grafik Forecasting**
+- **Composed Chart** dengan 3 layer:
+  - **Area Chart**: Menampilkan confidence interval (upper & lower bounds)
+  - **Line Chart**: Prediksi utama (predicted demand)
+  - **Visual Uncertainty**: Area berwarna menunjukkan tingkat ketidakpastian
+
+#### 4. **Interactive Features**
+- **Custom Tooltip**: Hover untuk detail prediksi per tanggal
+- **Responsive Design**: Chart menyesuaikan ukuran layar
+- **Loading States**: Indikator loading saat fetch data
+- **Error Handling**: Pesan error yang informatif
+
+#### 5. **Data Integration**
+- **Real-time API**: Fetch data dari `/api/forecast/:parent_code`
+- **MongoDB Integration**: Data forecast disimpan di database
+- **Authentication**: Protected route untuk admin only
+
+### 📊 Cara Kerja
+
+1. **Pilih Produk**: User memilih produk dari dropdown
+2. **Fetch Data**: Sistem mengambil data forecast dari backend
+3. **Calculate KPI**: Hitung total demand, confidence range, dan trend
+4. **Render Chart**: Tampilkan grafik dengan area confidence dan line prediksi
+5. **Interactive**: User dapat hover untuk detail per hari
+
+### 🎨 Design Elements
+
+- **Color Scheme**: Blue primary (#3B82F6), Green untuk positive (#10B981), Red untuk negative (#EF4444)
+- **Icons**: Lucide React icons (DollarSign, Target, TrendingUp/Down, BarChart3)
+- **Typography**: Clean, modern dengan hierarchy yang jelas
+- **Layout**: Grid responsive dengan spacing konsisten
+- **Charts**: Recharts library untuk visualisasi data
+
 ## API Endpoints
 
 Lihat [docs.md](kriyalogic-backend/docs.md) untuk dokumentasi API lengkap.
