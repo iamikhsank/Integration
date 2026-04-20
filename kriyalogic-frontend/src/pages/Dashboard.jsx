@@ -33,6 +33,7 @@ import PosPage from './POS';
 import OrderPaymentPage from './OrderPayment';
 import ReceiptHistoryPage from './ReceiptHistory';
 import ForecastPage from './ForecastPage';
+import AnalyticsReport from './AnalyticsReport';
 
 // nanti ganti ini dengan page POS beneran
 // const PosPage = () => <PlaceholderPage title="POS" />;
@@ -93,7 +94,7 @@ const Dashboard = () => {
       ]
     },
     { name: 'Forecasting', path: '/dashboard/forecast', icon: BarChart3 },
-    { name: 'Finance & Reports', path: '/dashboard/finance', icon: BarChart3 },
+    { name: 'Analytics Report', path: '/dashboard/analytics', icon: BarChart3 },
     { name: 'User Management', path: '/dashboard/user-management', icon: Users },
     { name: 'Settings', path: '/dashboard/settings', icon: Settings }
   ];
@@ -276,7 +277,7 @@ const Dashboard = () => {
                   path="/inventory/edit/child-product/:childId"
                   element={<InventoryEditChildProduct />}
                 />
-                <Route path="/finance" element={<PlaceholderPage title="Finance & Reports" />} />
+                <Route path="/analytics" element={<AnalyticsReport />} />
                 <Route path="/forecast" element={<ForecastPage />} />
                 <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
                 <Route path="/user-management" element={<UserManagement />} />
