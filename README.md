@@ -6,6 +6,7 @@ Sistem integrasi lengkap untuk forecasting penjualan toko menggunakan AI (Facebo
 
 ## Fitur Utama
 
+- **Analytics Report**: Dashboard analitik dengan KPI penjualan, grafik trend, dan visualisasi data historis
 - **Forecasting Penjualan**: Prediksi penjualan harian menggunakan model Prophet
 - **Manajemen Produk**: CRUD untuk master product, child product, kategori
 - **Manajemen User**: Sistem autentikasi dengan role admin dan cashier
@@ -94,6 +95,21 @@ cd ai_engine && python ml_forecasting.py
 ### Akses Aplikasi
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:5000/api/v1
+
+## Fitur Aplikasi
+
+### Admin Dashboard
+- **Analytics Report**: Analisis penjualan dengan KPI, grafik trend harian, distribusi metode pembayaran, dan tabel transaksi terbaru
+- **Inventory Management**: Kelola produk master, child product, dan kategori
+- **Forecasting**: Prediksi penjualan 30 hari ke depan berdasarkan produk
+- **User Management**: Kelola pengguna admin dan cashier
+- **Partner Management**: Kelola artisan dan tour guide
+
+### Cashier Dashboard
+- **POS System**: Proses transaksi penjualan dengan receipt generation
+- **Receipt History**: Riwayat transaksi dengan filter dan export PDF
+- **Delivery Management**: (Dalam pengembangan)
+- **Transaction Reports**: (Dalam pengembangan)
 
 ## API Endpoints
 
