@@ -51,8 +51,20 @@ const generateAIInsight = (productName, trend) => {
 const ForecastPage = () => {
   const [selectedProduct, setSelectedProduct] = useState('Patung Garuda Wisnu');
   const [forecastData, setForecastData] = useState([]);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const filteredForecastData = forecastData.filter((item) => {
+    const itemDate = new Date(item.fullDate);
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
+
+    if (from && itemDate < from) return false;
+    if (to && itemDate > to) return false;
+    return true;
+  });
 
   // Fetch forecast data
   useEffect(() => {
@@ -100,12 +112,12 @@ const ForecastPage = () => {
   }, [selectedProduct]);
 
   // Calculate KPIs
-  const totalPredicted = forecastData.reduce((sum, item) => sum + item.predicted, 0);
-  const avgConfidence = forecastData.length > 0
-    ? forecastData.reduce((sum, item) => sum + (item.upper - item.lower), 0) / forecastData.length
+  const totalPredicted = filteredForecastData.reduce((sum, item) => sum + item.predicted, 0);
+  const avgConfidence = filteredForecastData.length > 0
+    ? filteredForecastData.reduce((sum, item) => sum + (item.upper - item.lower), 0) / filteredForecastData.length
     : 0;
-  const trend = forecastData.length > 1
-    ? (forecastData[forecastData.length - 1].predicted > forecastData[0].predicted ? 'up' : 'down')
+  const trend = filteredForecastData.length > 1
+    ? (filteredForecastData[filteredForecastData.length - 1].predicted > filteredForecastData[0].predicted ? 'up' : 'down')
     : 'neutral';
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -130,10 +142,10 @@ const ForecastPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <BarChart3 className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">Sales Forecasting Dashboard</h1>
+              <BarChart3 className="h-8 w-8 text-[#6A4734] mr-3" />
+              <h1 className="text-2xl font-bold text-[#4F3427]">Sales Forecasting Dashboard</h1>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-[#5A3B2D]">
               KriyaLogic ERP System
             </div>
           </div>
@@ -142,32 +154,60 @@ const ForecastPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Product Selector */}
-        <div className="mb-8">
-          <label htmlFor="product-select" className="block text-sm font-medium text-gray-700 mb-2">
-            Select Parent Product
-          </label>
-          <select
-            id="product-select"
-            value={selectedProduct}
-            onChange={(e) => setSelectedProduct(e.target.value)}
-            className="block w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          >
-            {PARENT_PRODUCTS.map(product => (
-              <option key={product.value} value={product.value}>
-                {product.label}
-              </option>
-            ))}
-          </select>
+        <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_1fr] items-end">
+          <div>
+            <label htmlFor="product-select" className="block text-sm font-medium text-[#5A3B2D] mb-2">
+              Select Parent Product
+            </label>
+            <select
+              id="product-select"
+              value={selectedProduct}
+              onChange={(e) => setSelectedProduct(e.target.value)}
+              className="block w-full max-w-xs px-3 py-2 border border-[#D9C7B5] rounded-md bg-[#F8F1E8] shadow-sm focus:outline-none focus:ring-[#6A4734] focus:border-[#6A4734] text-[#3D312B]"
+            >
+              {PARENT_PRODUCTS.map(product => (
+                <option key={product.value} value={product.value}>
+                  {product.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4 max-w-md">
+            <div>
+              <label htmlFor="from-date" className="block text-sm font-medium text-[#5A3B2D] mb-2">
+                From
+              </label>
+              <input
+                id="from-date"
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="block w-full px-3 py-2 border border-[#D9C7B5] rounded-md bg-[#F8F1E8] outline-none focus:ring-[#6A4734] focus:border-[#6A4734] text-[#3D312B]"
+              />
+            </div>
+            <div>
+              <label htmlFor="to-date" className="block text-sm font-medium text-[#5A3B2D] mb-2">
+                To
+              </label>
+              <input
+                id="to-date"
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="block w-full px-3 py-2 border border-[#D9C7B5] rounded-md bg-[#F8F1E8] outline-none focus:ring-[#6A4734] focus:border-[#6A4734] text-[#3D312B]"
+              />
+            </div>
+          </div>
         </div>
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-[#FFF7EF] p-6 rounded-lg shadow-sm border border-[#D9C7B5]">
             <div className="flex items-center">
-              <DollarSign className="h-8 w-8 text-green-600 mr-3" />
+              <DollarSign className="h-8 w-8 text-[#6A4734] mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Predicted Demand</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-[#5A3B2D]">Total Predicted Demand</p>
+                <p className="text-2xl font-bold text-[#3D312B]">
                   Rp {totalPredicted.toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500">Next 30 days</p>
@@ -175,12 +215,12 @@ const ForecastPage = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-[#FFF7EF] p-6 rounded-lg shadow-sm border border-[#D9C7B5]">
             <div className="flex items-center">
-              <Target className="h-8 w-8 text-blue-600 mr-3" />
+              <Target className="h-8 w-8 text-[#6A4734] mr-3" />
               <div>
-                <p className="text-sm font-medium text-gray-600">Average Confidence Range</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm font-medium text-[#5A3B2D]">Average Confidence Range</p>
+                <p className="text-2xl font-bold text-[#3D312B]">
                   Rp {avgConfidence.toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500">Prediction margin</p>
@@ -198,7 +238,7 @@ const ForecastPage = () => {
                 <BarChart3 className="h-8 w-8 text-gray-600 mr-3" />
               )}
               <div>
-                <p className="text-sm font-medium text-gray-600">Trend Analysis</p>
+                <p className="text-sm font-medium text-[#5A3B2D]">Trend Analysis</p>
                 <p className={`text-2xl font-bold ${
                   trend === 'up' ? 'text-green-600' :
                   trend === 'down' ? 'text-red-600' : 'text-gray-900'
@@ -212,13 +252,13 @@ const ForecastPage = () => {
         </div>
 
         {/* AI Insight */}
-        {!loading && !error && forecastData.length > 0 && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-8">
+        {!loading && !error && filteredForecastData.length > 0 && (
+          <div className="bg-[#FFF4EB] border border-[#D9C7B5] rounded-lg p-6 mb-8">
             <div className="flex items-start">
-              <Sparkles className="h-6 w-6 text-blue-600 mr-3 mt-0.5" />
+              <Sparkles className="h-6 w-6 text-[#6A4734] mr-3 mt-0.5" />
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Insight & Recommendation</h3>
-                <p className="text-gray-700 leading-relaxed">
+                <h3 className="text-lg font-semibold text-[#4F3427] mb-2">AI Insight & Recommendation</h3>
+                <p className="text-[#5A3B2D] leading-relaxed">
                   {generateAIInsight(selectedProduct, trend)}
                 </p>
               </div>
@@ -230,7 +270,7 @@ const ForecastPage = () => {
         {loading && (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-blue-600 mr-3" />
-            <span className="text-gray-600">Loading forecast data...</span>
+            <span className="text-[#5A3B2D]">Loading forecast data...</span>
           </div>
         )}
 
@@ -248,14 +288,14 @@ const ForecastPage = () => {
         )}
 
         {/* Chart */}
-        {!loading && !error && forecastData.length > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        {!loading && !error && filteredForecastData.length > 0 && (
+          <div className="bg-[#FFF7EF] p-6 rounded-lg shadow-sm border border-[#D9C7B5] mb-8">
+            <h2 className="text-lg font-semibold text-[#4F3427] mb-4">
               Sales Forecast for {selectedProduct}
             </h2>
             <div className="h-96">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={forecastData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <ComposedChart data={filteredForecastData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis tickFormatter={(value) => `Rp ${value.toLocaleString()}`} />
@@ -284,11 +324,11 @@ const ForecastPage = () => {
                   <Line
                     type="monotone"
                     dataKey="predicted"
-                    stroke="#2563eb"
+                    stroke="#6A4734"
                     strokeWidth={2}
                     strokeDasharray="5 5"
                     name="Predicted Demand"
-                    dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
+                    dot={{ fill: '#6A4734', strokeWidth: 2, r: 4 }}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -296,11 +336,11 @@ const ForecastPage = () => {
             <div className="mt-4 text-sm text-gray-600">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <div className="w-4 h-0.5 bg-blue-600 mr-2" style={{borderStyle: 'dashed'}}></div>
+                  <div className="w-4 h-0.5 bg-[#6A4734] mr-2" style={{borderStyle: 'dashed'}}></div>
                   <span>Predicted Demand</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-4 h-2 bg-blue-100 mr-2"></div>
+                  <div className="w-4 h-2 bg-[#E8D7C6] mr-2"></div>
                   <span>Confidence Interval</span>
                 </div>
               </div>
@@ -309,48 +349,48 @@ const ForecastPage = () => {
         )}
 
         {/* Data Table */}
-        {!loading && !error && forecastData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">Forecast Details</h3>
+        {!loading && !error && filteredForecastData.length > 0 && (
+          <div className="bg-[#FFF7EF] rounded-lg shadow-sm border border-[#D9C7B5] overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#D9C7B5]">
+              <h3 className="text-lg font-medium text-[#4F3427]">Forecast Details</h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[#D9C7B5]">
+                <thead className="bg-[#F8F1E8]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5A3B2D] uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5A3B2D] uppercase tracking-wider">
                       Predicted Quantity
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5A3B2D] uppercase tracking-wider">
                       Lower Bound
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5A3B2D] uppercase tracking-wider">
                       Upper Bound
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5A3B2D] uppercase tracking-wider">
                       Range
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {forecastData.map((item, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {filteredForecastData.map((item, index) => (
+                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-[#F8F1E8]'}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
                         {item.date}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
                         Rp {item.predicted.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
                         Rp {item.lower.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
                         Rp {item.upper.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
                         Rp {(item.upper - item.lower).toLocaleString()}
                       </td>
                     </tr>

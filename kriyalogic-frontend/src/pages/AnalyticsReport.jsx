@@ -55,6 +55,8 @@ const AnalyticsReport = () => {
   const [analytics, setAnalytics] = useState(mockData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,9 +66,17 @@ const AnalyticsReport = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`${API_URL}/analytics/summary`, {
-          signal: controller.signal
-        });
+        const queryParams = new URLSearchParams();
+        if (fromDate) queryParams.set('from', fromDate);
+        if (toDate) queryParams.set('to', toDate);
+
+        const queryString = queryParams.toString();
+        const response = await fetch(
+          `${API_URL}/analytics/summary${queryString ? `?${queryString}` : ''}`,
+          {
+            signal: controller.signal
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`Server responded with ${response.status}`);
@@ -91,7 +101,7 @@ const AnalyticsReport = () => {
 
     fetchAnalytics();
     return () => controller.abort();
-  }, []);
+  }, [fromDate, toDate]);
 
   const {
     totalRevenue,
@@ -104,23 +114,49 @@ const AnalyticsReport = () => {
   } = analytics;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-[#F5F1EC] text-[#3D312B]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Analytics Report</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#6A4734]">Analytics Report</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[#4F3427]">
               Business performance overview
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">
+            <p className="mt-2 max-w-2xl text-sm text-[#5A3B2D]">
               Live KPI summary powered by your analytics API. The dashboard falls back to realistic sample data while loading or if the API cannot connect.
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">
-            <Sparkles className="h-5 w-5 text-sky-500" />
-            <span className="text-sm font-medium text-slate-700">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#D9C7B5] bg-[#FBF4EE] px-4 py-2 shadow-sm">
+            <Sparkles className="h-5 w-5 text-[#6A4734]" />
+            <span className="text-sm font-medium text-[#5A3B2D]">
               {loading ? 'Loading live data...' : error ? 'Mock data active' : 'Live data connected'}
             </span>
+          </div>
+        </div>
+
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#5A3B2D]">From</label>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full h-12 rounded-xl border border-[#D9C7B5] bg-[#F8F1E8] px-4 outline-none focus:ring-2 focus:ring-[#6A4734]"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-[#5A3B2D]">To</label>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full h-12 rounded-xl border border-[#D9C7B5] bg-[#F8F1E8] px-4 outline-none focus:ring-2 focus:ring-[#6A4734]"
+            />
+          </div>
+          <div className="col-span-2 flex items-end justify-end">
+            <div className="rounded-2xl bg-[#F8F1E8] px-4 py-3 text-sm font-medium text-[#5A3B2D] shadow-sm border border-[#D9C7B5]">
+              {fromDate || toDate ? `${fromDate || 'Any'} → ${toDate || 'Any'}` : 'No date filter selected'}
+            </div>
           </div>
         </div>
 
@@ -132,78 +168,78 @@ const AnalyticsReport = () => {
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-500">Total Revenue</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-[#5A3B2D]">Total Revenue</p>
+                  <p className="mt-3 text-3xl font-semibold text-[#3D312B]">
                     {formatRupiah(totalRevenue)}
                   </p>
                 </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-600">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8D7C6] text-[#6A4734]">
                   <ArrowUpRight className="h-5 w-5" />
                 </div>
               </div>
-              <p className="mt-4 text-sm text-slate-500">
+              <p className="mt-4 text-sm text-[#5A3B2D]">
                 Revenue from sales and services across the analytics period.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-500">Net Profit</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900">{formatRupiah(netProfit)}</p>
+                  <p className="text-sm font-semibold text-[#5A3B2D]">Net Profit</p>
+                  <p className="mt-3 text-3xl font-semibold text-[#3D312B]">{formatRupiah(netProfit)}</p>
                 </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8D7C6] text-[#6A4734]">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
               </div>
-              <p className="mt-4 text-sm text-slate-500">
+              <p className="mt-4 text-sm text-[#5A3B2D]">
                 Net earnings after commissions and operational costs.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-500">Delivery Profit (15%)</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900">{formatRupiah(deliveryProfit)}</p>
+                  <p className="text-sm font-semibold text-[#5A3B2D]">Delivery Profit (15%)</p>
+                  <p className="mt-3 text-3xl font-semibold text-[#3D312B]">{formatRupiah(deliveryProfit)}</p>
                 </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8D7C6] text-[#6A4734]">
                   <TrendingUp className="h-5 w-5" />
                 </div>
               </div>
-              <p className="mt-4 text-sm text-slate-500">
+              <p className="mt-4 text-sm text-[#5A3B2D]">
                 Profit contribution from premium delivery pricing.
               </p>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-500">Total Commission Expenses</p>
-                  <p className="mt-3 text-3xl font-semibold text-slate-900">{formatRupiah(totalCommissionExpenses)}</p>
+                  <p className="text-sm font-semibold text-[#5A3B2D]">Total Commission Expenses</p>
+                  <p className="mt-3 text-3xl font-semibold text-[#3D312B]">{formatRupiah(totalCommissionExpenses)}</p>
                 </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8D7C6] text-[#6A4734]">
                   <Trophy className="h-5 w-5" />
                 </div>
               </div>
-              <p className="mt-4 text-sm text-slate-500">
+              <p className="mt-4 text-sm text-[#5A3B2D]">
                 Total commission payouts to artisans and tour guides.
               </p>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#5A3B2D]">
                   Product velocity
                 </p>
-                <h2 className="mt-2 text-xl font-semibold text-slate-900">Top selling products</h2>
+                <h2 className="mt-2 text-xl font-semibold text-[#4F3427]">Top selling products</h2>
               </div>
-              <div className="rounded-2xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
+              <div className="rounded-2xl bg-[#F8F1E8] px-3 py-2 text-sm font-medium text-[#5A3B2D]">
                 {topSellingProducts.length} items
               </div>
             </div>
@@ -211,10 +247,10 @@ const AnalyticsReport = () => {
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={topSellingProducts} margin={{ top: 8, right: 0, left: -12, bottom: 0 }}>
-                  <XAxis dataKey="productName" tick={{ fill: '#64748b', fontSize: 12 }} tickLine={false} axisLine={false} interval={0} angle={-20} textAnchor="end" height={70} />
-                  <YAxis tick={{ fill: '#64748b', fontSize: 12 }} tickLine={false} axisLine={false} />
-                  <Tooltip formatter={(value) => [`${value} units`, 'Quantity']} cursor={{ fill: 'rgba(56, 189, 248, 0.08)' }} />
-                  <Bar dataKey="totalQuantity" fill="#0ea5e9" radius={[8, 8, 0, 0]} />
+                  <XAxis dataKey="productName" tick={{ fill: '#4F3427', fontSize: 12 }} tickLine={false} axisLine={false} interval={0} angle={-20} textAnchor="end" height={70} />
+                  <YAxis tick={{ fill: '#4F3427', fontSize: 12 }} tickLine={false} axisLine={false} />
+                  <Tooltip formatter={(value) => [`${value} units`, 'Quantity']} cursor={{ fill: 'rgba(106, 71, 52, 0.12)' }} />
+                  <Bar dataKey="totalQuantity" fill="#6A4734" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -222,24 +258,24 @@ const AnalyticsReport = () => {
         </div>
 
         <section className="mt-10 grid gap-6 xl:grid-cols-3">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-500">Top Selling Products</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-900">Quantity leaderboard</h3>
+                <p className="text-sm font-semibold text-[#5A3B2D]">Top Selling Products</p>
+                <h3 className="mt-2 text-xl font-semibold text-[#4F3427]">Quantity leaderboard</h3>
               </div>
-              <div className="rounded-2xl bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700">
+              <div className="rounded-2xl bg-[#F8F1E8] px-3 py-2 text-sm font-semibold text-[#5A3B2D]">
                 <Trophy className="inline-block h-4 w-4 align-middle" />
               </div>
             </div>
             <div className="space-y-4">
               {topSellingProducts.map((item, index) => (
-                <div key={item.productName} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div key={item.productName} className="flex items-center justify-between rounded-2xl border border-[#D9C7B5] bg-[#F8F1E8] px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.productName}</p>
-                    <p className="text-sm text-slate-500">Rank {index + 1}</p>
+                    <p className="text-sm font-semibold text-[#3D312B]">{item.productName}</p>
+                    <p className="text-sm text-[#5A3B2D]">Rank {index + 1}</p>
                   </div>
-                  <span className="rounded-full bg-slate-900 px-3 py-1 text-sm font-semibold text-white">
+                  <span className="rounded-full bg-[#6A4734] px-3 py-1 text-sm font-semibold text-white">
                     {item.totalQuantity}
                   </span>
                 </div>
@@ -247,24 +283,24 @@ const AnalyticsReport = () => {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-500">Top Tour Guides</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-900">Revenue leaders</h3>
+                <p className="text-sm font-semibold text-[#5A3B2D]">Top Tour Guides</p>
+                <h3 className="mt-2 text-xl font-semibold text-[#4F3427]">Revenue leaders</h3>
               </div>
-              <div className="rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
+              <div className="rounded-2xl bg-[#F8F1E8] px-3 py-2 text-sm font-semibold text-[#5A3B2D]">
                 <Star className="inline-block h-4 w-4 align-middle" />
               </div>
             </div>
             <div className="space-y-4">
               {topPerformingTourGuides.map((item, index) => (
-                <div key={item.tourGuide} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div key={item.tourGuide} className="flex items-center justify-between rounded-2xl border border-[#D9C7B5] bg-[#F8F1E8] px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.tourGuide}</p>
-                    <p className="text-sm text-slate-500">Sales: {formatRupiah(item.totalSales)}</p>
+                    <p className="text-sm font-semibold text-[#3D312B]">{item.tourGuide}</p>
+                    <p className="text-sm text-[#5A3B2D]">Sales: {formatRupiah(item.totalSales)}</p>
                   </div>
-                  <span className="rounded-full bg-emerald-900 px-3 py-1 text-sm font-semibold text-white">
+                  <span className="rounded-full bg-[#6A4734] px-3 py-1 text-sm font-semibold text-white">
                     #{index + 1}
                   </span>
                 </div>
@@ -272,24 +308,24 @@ const AnalyticsReport = () => {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#D9C7B5] bg-[#FFF7EF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-500">Top Artisans</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-900">Production champions</h3>
+                <p className="text-sm font-semibold text-[#5A3B2D]">Top Artisans</p>
+                <h3 className="mt-2 text-xl font-semibold text-[#4F3427]">Production champions</h3>
               </div>
-              <div className="rounded-2xl bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-700">
+              <div className="rounded-2xl bg-[#F8F1E8] px-3 py-2 text-sm font-semibold text-[#5A3B2D]">
                 <TrendingUp className="inline-block h-4 w-4 align-middle" />
               </div>
             </div>
             <div className="space-y-4">
               {topPerformingArtisans.map((item, index) => (
-                <div key={item.artisanName} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <div key={item.artisanName} className="flex items-center justify-between rounded-2xl border border-[#D9C7B5] bg-[#F8F1E8] px-4 py-3">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{item.artisanName}</p>
-                    <p className="text-sm text-slate-500">Items sold: {item.totalQuantity}</p>
+                    <p className="text-sm font-semibold text-[#3D312B]">{item.artisanName}</p>
+                    <p className="text-sm text-[#5A3B2D]">Items sold: {item.totalQuantity}</p>
                   </div>
-                  <span className="rounded-full bg-violet-900 px-3 py-1 text-sm font-semibold text-white">
+                  <span className="rounded-full bg-[#6A4734] px-3 py-1 text-sm font-semibold text-white">
                     #{index + 1}
                   </span>
                 </div>
