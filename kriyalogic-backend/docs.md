@@ -5,12 +5,12 @@
 
 ## Endpoints
 
-### 1. Root Endpoint
-Mengembalikan status dasar API v1.
+### 1. General
 
+#### Root Endpoint
 - **URL**: `/`
 - **Method**: `GET`
-- **Response Success (200)**:
+- **Response**:
   ```json
   {
     "success": true,
@@ -22,8 +22,6 @@ Mengembalikan status dasar API v1.
 ### 2. Authentication
 
 #### Login
-Login untuk mendapatkan token akses.
-
 - **URL**: `/auth/login`
 - **Method**: `POST`
 - **Body**:
@@ -33,7 +31,7 @@ Login untuk mendapatkan token akses.
     "password": "password123"
   }
   ```
-- **Response Success (200)**:
+- **Response Success**:
   ```json
   {
     "success": true,
@@ -46,17 +44,8 @@ Login untuk mendapatkan token akses.
     }
   }
   ```
-- **Response Error (401)**:
-  ```json
-  {
-    "success": false,
-    "message": "Invalid credentials"]
-  }
-  ```
 
 #### Forgot Password
-Mengirimkan email berisi link reset password saat user lupa password.
-
 - **URL**: `/auth/forgot-password`
 - **Method**: `POST`
 - **Body**:
@@ -65,198 +54,97 @@ Mengirimkan email berisi link reset password saat user lupa password.
     "email": "user@kriyalogic.com"
   }
   ```
-- **Response Success (200)**:
-  ```json
-  {
-    "success": true,
-    "data": "Email sent"
-  }
-  ```
-- **Response Error (404)**:
-  ```json
-  {
-    "success": false,
-    "message": "There is no user with that email"
-  }
-  ```
 
 #### Reset Password
-Mengatur password baru menggunakan token dari email forgot password.
-
 - **URL**: `/auth/reset-password/:resettoken`
 - **Method**: `PUT`
-- **URL Params**: `resettoken` (didapat dari link email)
 - **Body**:
   ```json
   {
     "password": "newpassword123"
   }
   ```
-- **Response Success (200)**:
-  ```json
-  {
-    "success": true,
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "message": "Password reset successful"
-  }
-  ```
-- **Response Error (400)**:
-  ```json
-  {
-    "success": false,
-    "message": "Invalid token"
-  }
-  ```
 
-### 3. Users
+### 3. Analytics
 
-#### Create Cashier
-Membuat user baru dengan role cashier. Hanya bisa diakses oleh Admin.
+#### Summary
+Menampilkan ringkasan analytics yang digunakan oleh halaman Analytics Report frontend.
 
-- **URL**: `/users/cashier`
-- **Method**: `POST`
-- **Headers**:
-  - `Authorization`: `Bearer <admin_token>`
-- **Body**:
-  ```json
-  {
-    "username": "Ahmad Dahlan",
-    "email": "ahmad@kriyalogic.com",
-    "password": "password123"
-  }
-  ```
-- **Response Success (201)**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "60d0...",
-      "username": "Ahmad Dahlan",
-      "email": "ahmad@kriyalogic.com",
-      "role": "cashier",
-      "status": "active"
-    }
-  }
-  ```
-- **Response Error (403)**:
-  ```json
-  {
-    "success": false,
-    "message": "User role cashier is not authorized to access this route"
-  }
-  ```
-
-#### Get All Cashiers
-Mengambil semua data user dengan role cashier. Hanya bisa diakses oleh Admin.
-
-- **URL**: `/users/cashiers`
+- **URL**: `/analytics/summary`
 - **Method**: `GET`
-- **Headers**:
-  - `Authorization`: `Bearer <admin_token>`
-- **Response Success (200)**:
-  ```json
-  {
-    "success": true,
-    "count": 2,
-    "data": [
-      {
-        "role": "cashier",
-        "status": "active",
-        "_id": "60d0...",
-        "username": "Ahmad Dahlan",
-        "email": "ahmad@kriyalogic.com",
-        "createdAt": "2023-01-01T00:00:00.000Z"
-      },
-      {
-        "role": "cashier",
-        "status": "inactive",
-        "_id": "60d1...",
-        "username": "Cashier Two",
-        "email": "cashier2@kriyalogic.com",
-        "createdAt": "2023-01-02T00:00:00.000Z"
-      }
-    ]
-  }
-  ```
-
-
-#### Update Cashier
-Memperbarui data user dengan role cashier. Hanya bisa diakses oleh Admin.
-
-- **URL**: `/users/cashier/:id`
-- **Method**: `PUT`
-- **Headers**:
-  - `Authorization`: `Bearer <admin_token>`
-- **Body** (optional):
-  ```json
-  {
-    "username": "New Username",
-    "email": "newemail@kriyalogic.com",
-    "password": "newpassword123",
-    "status": "active"
-  }
-  ```
 - **Response Success (200)**:
   ```json
   {
     "success": true,
     "data": {
-      "id": "60d0...",
-      "username": "New Username",
-      "email": "newemail@kriyalogic.com",
-      "role": "cashier",
-      "status": "active"
+      "totalRevenue": 178500000,
+      "totalCommissionExpenses": 24250000,
+      "netProfit": 94500000,
+      "deliveryProfit": 18200000,
+      "topSellingProducts": [
+        {"productName": "Patung Garuda Wisnu", "totalQuantity": 72},
+        {"productName": "Patung Ganesha", "totalQuantity": 55}
+      ],
+      "topPerformingTourGuides": [
+        {"tourGuide": "Adi Putra", "totalSales": 42000000}
+      ],
+      "topPerformingArtisans": [
+        {"artisanName": "Sari Dewi", "totalQuantity": 84}
+      ]
     }
   }
   ```
-- **Response Error (404)**:
-  ```json
-  {
-    "success": false,
-    "message": "User not found"
-  }
-  ```
-- **Response Error (400)**:
-  ```json
-  {
-    "success": false,
-    "message": "Email already exists"
-  }
-  ```
 
-#### Delete Cashier
-Menghapus user dengan role cashier. Hanya bisa diakses oleh Admin.
+### 4. Seeder & Data Models
 
-- **URL**: `/users/cashier/:id`
-- **Method**: `DELETE`
-- **Headers**:
-  - `Authorization`: `Bearer <admin_token>`
-- **Response Success (200)**:
-  ```json
-  {
-    "success": true,
-    "message": "Cashier deleted successfully"
-  }
-  ```
-- **Response Error (404)**:
-  ```json
-  {
-    "success": false,
-    "message": "User not found"
-  }
-  ```
-- **Response Error (400)**:
-  ```json
-  {
-    "success": false,
-    "message": "User is not a cashier"
-  }
-  ```
+#### Seeder Script
+Script CSV seeding ditambahkan di backend:
+- `src/scripts/seed_analytics.js`
 
-### 4. Artisans
+Script ini melakukan:
+- Pembacaan CSV
+- Pembersihan nilai moneter dari format `Rp1,900,000`, spasi, dan angka desimal tidak normal
+- Penyimpanan ke collection MongoDB `analyticsrecords` dan `deliveryrecords`
 
-#### Create Artisan
-Membuat data artisan baru. Hanya bisa diakses oleh Admin.
+#### Models
+- `src/models/AnalyticsRecord.js`
+  - `date`, `productName`, `artisanName`, `tourGuide`, `quantity`, `totalSales`, `artisanCommission`, `guideCommission`, `netProfit`
+- `src/models/DeliveryRecord.js`
+  - `date`, `productName`, `recipientName`, `originalCourierCost`, `storeProfit15Percent`, `totalShippingPrice`
+
+### 5. API Notes
+
+- Semua endpoint menggunakan prefix `/api/v1`
+- Endpoint analytics summary tidak membutuhkan body
+- Jika response error, server mengembalikan objek `success: false` dan pesan error
+
+## Cara Menjalankan Backend
+
+1. Install dependencies
+```bash
+npm install
+```
+
+2. Jalankan server
+```bash
+npm start
+```
+
+3. Jalankan seeder analytics
+```bash
+node src/scripts/seed_analytics.js
+```
+
+## Catatan Teknis
+
+- Route analytics terpasang di `src/routes/analyticsRoutes.js`
+- Controller summary berada di `src/controllers/analyticsController.js`
+- Schema MongoDB didefinisikan di `src/models/AnalyticsRecord.js` dan `src/models/DeliveryRecord.js`
+- Backend terhubung dengan MongoDB melalui `src/config/db.js`
+
+## Referensi
+
+Untuk frontend, gunakan `kriyalogic-frontend/README.md`.
 
 - **URL**: `/artisans`
 - **Method**: `POST`

@@ -17,6 +17,7 @@ const childProductRoutes = require('./routes/childProductRoutes');
 const saleRoutes = require('./routes/saleRoutes')
 const posRoutes = require('./routes/posRoutes');
 const forecastRoutes = require('./routes/forecastRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 // Middleware
 const corsOptions = {
@@ -46,6 +47,7 @@ apiRoutes.use('/child-items', childProductRoutes);
 apiRoutes.use('/sales', saleRoutes);
 apiRoutes.use('/pos', posRoutes);
 apiRoutes.use('/forecast', forecastRoutes);
+apiRoutes.use('/analytics', analyticsRoutes);
 
 apiRoutes.get('/', (req, res) => {
   res.status(200).json({

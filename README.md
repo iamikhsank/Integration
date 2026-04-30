@@ -2,55 +2,61 @@
 
 ## Deskripsi
 
-Sistem integrasi lengkap untuk forecasting penjualan toko menggunakan AI (Facebook Prophet), dengan backend Node.js/Express, frontend React/Vite, dan engine AI Python.
+KriyaLogic adalah sistem ERP hybrid untuk forecasting penjualan, penjualan point-of-sale, dan analytics berbasis web. Proyek ini menggabungkan:
+
+- Backend Node.js / Express untuk API dan manajemen data
+- Frontend React / Vite dengan Tailwind CSS untuk dashboard modern
+- Machine Learning engine Python untuk forecasting menggunakan Facebook Prophet
+- MongoDB untuk penyimpanan data transaksi dan analytics
 
 ## Fitur Utama
 
-- **Analytics Report**: Dashboard analitik dengan KPI penjualan, grafik trend, dan visualisasi data historis
-- **Forecasting Penjualan**: Prediksi penjualan harian menggunakan model Prophet
-- **Manajemen Produk**: CRUD untuk master product, child product, kategori
-- **Manajemen User**: Sistem autentikasi dengan role admin dan cashier
-- **POS System**: Point of Sale untuk transaksi penjualan
-- **Dashboard**: Antarmuka web untuk monitoring dan forecasting
-- **Database**: MongoDB untuk penyimpanan data
+- **Analytics Report**: Dashboard analitik lengkap dengan KPI, leaderboard, dan ringkasan bisnis
+- **Forecasting Penjualan**: Prediksi permintaan produk 30 hari ke depan
+- **Manajemen Produk**: CRUD untuk master product, child product, dan kategori
+- **Manajemen User**: Role-based authentication untuk admin dan cashier
+- **POS System**: Transaksi penjualan cash/QR dengan invoice dan riwayat
+- **Delivery Analytics**: Pencatatan biaya pengiriman dan profit premium
 
 ## Struktur Proyek
 
 ```
 Integration/
-├── ai_engine/                 # Engine AI untuk forecasting
-│   ├── ml_forecasting.py     # Modul forecasting terintegrasi dengan MongoDB
-│   ├── requirements.txt      # Dependencies Python
-│   └── seed_data.py          # Script seeding data dari Excel
-├── kriyalogic-backend/        # Backend API Node.js
+├── ai_engine/
+│   ├── ml_forecasting.py
+│   ├── requirements.txt
+│   └── seed_data.py
+├── kriyalogic-backend/
 │   ├── src/
-│   │   ├── controllers/       # Controller untuk setiap endpoint
-│   │   ├── models/           # Model MongoDB
-│   │   ├── routes/           # Routing API
-│   │   ├── middleware/       # Middleware auth, dll
-│   │   └── utils/            # Utility functions
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── middleware/
+│   │   ├── config/
+│   │   ├── scripts/
+│   │   └── utils/
 │   ├── package.json
-│   └── docs.md               # Dokumentasi API
-├── kriyalogic-frontend/       # Frontend React
+│   └── docs.md
+├── kriyalogic-frontend/
 │   ├── src/
-│   │   ├── components/       # Komponen React
-│   │   ├── pages/           # Halaman aplikasi
-│   │   ├── hooks/           # Custom hooks
-│   │   └── utils/           # Utility functions
-│   └── package.json
-├── sistem_peramalan_(forecasting)_penjualan_toko.py  # Script forecasting standalone
-├── models/                   # Folder untuk model atau data tambahan
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   └── utils/
+│   ├── package.json
+│   └── README.md
+├── sistem_peramalan_(forecasting)_penjualan_toko.py
 └── README.md
 ```
 
-## Prerequisites
+## Prasyarat
 
-- Node.js (v16+)
+- Node.js 16+ dan npm
 - Python 3.8+
-- MongoDB (local atau cloud)
-- npm atau yarn
+- MongoDB lokal atau cloud
+- Akses terminal / shell
 
-## Instalasi
+## Instalasi Cepat
 
 ### 1. Clone Repository
 ```bash
@@ -58,21 +64,25 @@ git clone https://github.com/iamikhsank/Integration.git
 cd Integration
 ```
 
-### 2. Setup Backend
+### 2. Backend
 ```bash
 cd kriyalogic-backend
 npm install
-# Setup .env file dengan MONGO_URI dan JWT_SECRET
-npm run seed  # Seed data awal
 ```
 
-### 3. Setup Frontend
+Buat file `.env` dengan setidaknya:
+```bash
+MONGO_URI=mongodb://localhost:27017/kriyalogic
+JWT_SECRET=your_jwt_secret
+```
+
+### 3. Frontend
 ```bash
 cd ../kriyalogic-frontend
 npm install
 ```
 
-### 4. Setup AI Engine
+### 4. AI Engine
 ```bash
 cd ../ai_engine
 pip install -r requirements.txt
@@ -80,141 +90,114 @@ pip install -r requirements.txt
 
 ## Menjalankan Sistem
 
-### Jalankan Semua Komponen
-```bash
-# Terminal 1: Backend
-cd kriyalogic-backend && npm start
-
-# Terminal 2: Frontend
-cd kriyalogic-frontend && npm run dev
-
-# Terminal 3: Forecasting (jika perlu)
-cd ai_engine && python ml_forecasting.py
-```
-
-### Akses Aplikasi
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:5000/api/v1
-
-## Fitur Aplikasi
-
-### Admin Dashboard
-- **Analytics Report**: Analisis penjualan dengan KPI, grafik trend harian, distribusi metode pembayaran, dan tabel transaksi terbaru
-- **Inventory Management**: Kelola produk master, child product, dan kategori
-- **Forecasting**: Prediksi penjualan 30 hari ke depan berdasarkan produk
-- **User Management**: Kelola pengguna admin dan cashier
-- **Partner Management**: Kelola artisan dan tour guide
-
-### Cashier Dashboard
-- **POS System**: Proses transaksi penjualan dengan receipt generation
-- **Receipt History**: Riwayat transaksi dengan filter dan export PDF
-- **Delivery Management**: (Dalam pengembangan)
-- **Transaction Reports**: (Dalam pengembangan)
-
-## Halaman Forecasting
-
-Halaman Forecasting menyediakan dashboard interaktif untuk memprediksi penjualan produk menggunakan AI Facebook Prophet dengan visualisasi yang komprehensif.
-
-### 🎯 Fitur Utama
-
-#### 1. **Product Selector**
-- Dropdown untuk memilih produk parent yang ingin di-forecast
-- Produk tersedia: Patung Buddha, Patung Ganesha, Patung Naga, dll.
-- Real-time update forecast saat produk berubah
-
-#### 2. **KPI Cards**
-- **Total Predicted Demand**: Total prediksi penjualan untuk 30 hari ke depan
-- **Average Confidence Range**: Rata-rata margin error prediksi
-- **Trend Analysis**: Analisis trend (Growing/Declining/Stable) dengan indikator visual
-
-#### 3. **Grafik Forecasting**
-- **Composed Chart** dengan 3 layer:
-  - **Area Chart**: Menampilkan confidence interval (upper & lower bounds)
-  - **Line Chart**: Prediksi utama (predicted demand)
-  - **Visual Uncertainty**: Area berwarna menunjukkan tingkat ketidakpastian
-
-#### 4. **Interactive Features**
-- **Custom Tooltip**: Hover untuk detail prediksi per tanggal
-- **Responsive Design**: Chart menyesuaikan ukuran layar
-- **Loading States**: Indikator loading saat fetch data
-- **Error Handling**: Pesan error yang informatif
-
-#### 5. **Data Integration**
-- **Real-time API**: Fetch data dari `/api/forecast/:parent_code`
-- **MongoDB Integration**: Data forecast disimpan di database
-- **Authentication**: Protected route untuk admin only
-
-### 📊 Cara Kerja
-
-1. **Pilih Produk**: User memilih produk dari dropdown
-2. **Fetch Data**: Sistem mengambil data forecast dari backend
-3. **Calculate KPI**: Hitung total demand, confidence range, dan trend
-4. **Render Chart**: Tampilkan grafik dengan area confidence dan line prediksi
-5. **Interactive**: User dapat hover untuk detail per hari
-
-### 🎨 Design Elements
-
-- **Color Scheme**: Blue primary (#3B82F6), Green untuk positive (#10B981), Red untuk negative (#EF4444)
-- **Icons**: Lucide React icons (DollarSign, Target, TrendingUp/Down, BarChart3)
-- **Typography**: Clean, modern dengan hierarchy yang jelas
-- **Layout**: Grid responsive dengan spacing konsisten
-- **Charts**: Recharts library untuk visualisasi data
-
-## API Endpoints
-
-Lihat [docs.md](kriyalogic-backend/docs.md) untuk dokumentasi API lengkap.
-
-## Forecasting
-
-### Menggunakan Script Standalone
-```bash
-python sistem_peramalan_\(forecasting\)_penjualan_toko.py
-```
-
-### Menggunakan Engine Terintegrasi
-Script `ml_forecasting.py` terhubung langsung ke MongoDB untuk forecasting real-time.
-
-## Dependencies
-
 ### Backend
-- express
-- mongoose
-- bcryptjs
-- jsonwebtoken
-- cors
-- dotenv
-- exceljs
-- resend
+```bash
+cd kriyalogic-backend
+npm start
+```
 
 ### Frontend
-- react
-- react-dom
-- react-router-dom
-- tailwindcss
-- lucide-react
-- recharts
-- file-saver
-- html2canvas-pro
-- jspdf
-- xlsx
+```bash
+cd kriyalogic-frontend
+npm run dev
+```
 
-### AI Engine
-- pandas
-- prophet
-- pymongo
-- python-dotenv
-- openpyxl
-- scikit-learn
-- matplotlib
-- plotly
+### Forecasting Engine (Opsional)
+```bash
+cd ai_engine
+python ml_forecasting.py
+```
 
-## Kontribusi
+### Endpoint Dasar
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:5000/api/v1`
 
-1. Fork repository
-2. Buat branch fitur baru
-3. Commit perubahan
-4. Push ke branch
-5. Buat Pull Request
+## Analytic Feature & Seeding
+
+### Seeder CSV Analytics
+Folder backend berisi script baru:
+- `src/scripts/seed_analytics.js`
+
+Script ini membaca dua CSV utama:
+- `KriyaLogic_Final_Analytics_Report_v2.csv`
+- `KriyaLogic_Delivery_Analytics_Premium_Price.csv`
+
+Script membersihkan nilai moneter kotor seperti:
+- `Rp1,900,000`
+- ` 31350.000000000004 `
+- spasi kosong dan karakter non-digit
+
+Jalankan dengan:
+```bash
+cd kriyalogic-backend
+node src/scripts/seed_analytics.js
+```
+
+### Model MongoDB Baru
+- `src/models/AnalyticsRecord.js`
+- `src/models/DeliveryRecord.js`
+
+Model baru ini mendukung analytics rekaman penjualan dan delivery profit.
+
+### API Analytics Summary
+Endpoint baru:
+- `GET /api/v1/analytics/summary`
+
+Response berisi:
+- `totalRevenue`
+- `totalCommissionExpenses`
+- `netProfit`
+- `deliveryProfit`
+- `topSellingProducts`
+- `topPerformingTourGuides`
+- `topPerformingArtisans`
+
+Lihat dokumentasi API di `kriyalogic-backend/docs.md`.
+
+## Halaman Analytics Frontend
+
+Frontend sekarang memiliki halaman analytics yang terhubung ke API summary.
+
+Fitur utama:
+- 4 KPI card: revenue, profit, delivery profit, commission expenses
+- Leaderboard untuk produk, tour guide, dan artisan
+- Recharts bar chart untuk top selling products
+- Fallback mock data saat API belum tersedia
+
+Page berada di:
+- `kriyalogic-frontend/src/pages/AnalyticsReport.jsx`
+
+## Struktur Endpoint Utama
+
+- `/api/v1/auth` - autentikasi
+- `/api/v1/users` - manajemen user
+- `/api/v1/artisans` - manajemen artisan
+- `/api/v1/guides` - manajemen tour guide
+- `/api/v1/master-products` - master product
+- `/api/v1/categories` - kategori
+- `/api/v1/child-items` - child product
+- `/api/v1/sales` - transaksi penjualan
+- `/api/v1/pos` - POS
+- `/api/v1/forecast` - forecasting
+- `/api/v1/analytics` - analytics summary
+
+## Frontend Penggunaan
+
+### Jalankan Development
+```bash
+cd kriyalogic-frontend
+npm run dev
+```
+
+### Build Produksi
+```bash
+npm run build
+```
+
+## Dokumentasi Lebih Lanjut
+
+- Backend API: `kriyalogic-backend/docs.md`
+- Frontend README: `kriyalogic-frontend/README.md`
 
 ## Lisensi
 
@@ -222,4 +205,4 @@ ISC
 
 ## Kontak
 
-Untuk pertanyaan atau dukungan, hubungi maintainer repository.
+Untuk dukungan atau pertanyaan, lihat maintainer repository.

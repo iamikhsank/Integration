@@ -21,7 +21,8 @@ import {
   DollarSign,
   Target,
   AlertCircle,
-  Loader2
+  Loader2,
+  Sparkles
 } from 'lucide-react';
 
 // Mock data for parent products - in real app, fetch from API
@@ -34,6 +35,18 @@ const PARENT_PRODUCTS = [
   { value: 'Patung Barong', label: 'Patung Barong' },
   { value: 'Patung Harimau', label: 'Patung Harimau' }
 ];
+
+// Helper function to generate AI Insight text
+const generateAIInsight = (productName, trend) => {
+  switch (trend) {
+    case 'up':
+      return `Stock for ${productName} should be increased as recent demand is showing a significant upward trend.`;
+    case 'down':
+      return `Consider reducing the inventory for ${productName} as the forecasted demand is declining.`;
+    default:
+      return `Demand for ${productName} is projected to remain stable.`;
+  }
+};
 
 const ForecastPage = () => {
   const [selectedProduct, setSelectedProduct] = useState('Patung Garuda Wisnu');
@@ -197,6 +210,21 @@ const ForecastPage = () => {
             </div>
           </div>
         </div>
+
+        {/* AI Insight */}
+        {!loading && !error && forecastData.length > 0 && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <div className="flex items-start">
+              <Sparkles className="h-6 w-6 text-blue-600 mr-3 mt-0.5" />
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Insight & Recommendation</h3>
+                <p className="text-gray-700 leading-relaxed">
+                  {generateAIInsight(selectedProduct, trend)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (

@@ -1,48 +1,79 @@
+# KriyaLogic Frontend
+
 ## Prasyarat
 
-Sebelum memulai, pastikan Anda telah menginstal perangkat lunak berikut di komputer Anda:
+Sebelum menjalankan frontend, pastikan Anda sudah menginstal:
 
-*   [Node.js](https://nodejs.org/) (Versi LTS disarankan)
-*   [npm](https://www.npmjs.com/) (Biasanya sudah terinstall bersama Node.js)
+- Node.js (LTS direkomendasikan)
+- npm
 
 ## Instalasi
 
-Ikuti langkah-langkah berikut untuk menginstal dan menjalankan proyek ini secara lokal:
-
-1.  **Clone repositori ini** (jika Anda menggunakan git):
+1. Masuk ke folder frontend:
     ```bash
-    git clone <url-repositori-anda>
-    cd kriyalogic
+    cd kriyalogic-frontend
     ```
 
-2.  **Install dependensi**:
-    Jalankan perintah berikut di terminal untuk mengunduh semua pustaka yang diperlukan:
+2. Install dependensi:
     ```bash
     npm install
     ```
 
 ## Menjalankan Aplikasi
 
-Berikut adalah perintah-perintah yang tersedia dalam proyek ini:
-
 ### Mode Development
-Untuk menjalankan aplikasi dalam mode pengembangan (development) dengan fitur Hot Module Replacement (HMR):
+Jalankan aplikasi dengan hot reload:
 ```bash
 npm run dev
 ```
-Setelah dijalankan, buka browser dan akses alamat lokal yang muncul di terminal (biasanya `http://localhost:5173`).
 
-### Build untuk Produksi
-Untuk membangun aplikasi agar siap dipublikasikan (production-ready):
+Lalu buka browser di alamat yang ditampilkan, biasanya `http://localhost:5173`.
+
+### Build Produksi
+Untuk membangun bundle produksi yang dioptimalkan:
 ```bash
 npm run build
 ```
-Perintah ini akan menghasilkan file statis di dalam folder `dist` yang telah dioptimalkan.
 
 ## Struktur Folder
 
-*   `/src`: Berisi kode sumber aplikasi (komponen, halaman, hooks, dll).
-*   `/public`: Berisi aset statis yang dapat diakses publik.
-*   `index.html`: Titik masuk utama aplikasi.
-*   `vite.config.js`: Konfigurasi untuk Vite.
-*   `tailwind.config.js`: Konfigurasi untuk Tailwind CSS.
+- `src/` — kode sumber aplikasi
+  - `components/` — reusable React components
+  - `pages/` — halaman utama aplikasi
+  - `hooks/` — custom hooks
+  - `utils/` — utility functions
+- `public/` — aset statis
+- `index.html` — titik masuk aplikasi
+- `vite.config.js` — konfigurasi Vite
+- `tailwind.config.js` — konfigurasi Tailwind CSS
+
+## Analytics Report Page
+
+Halaman analytics terletak di:
+- `src/pages/AnalyticsReport.jsx`
+
+Fitur halaman:
+- 4 KPI cards: `Total Revenue`, `Net Profit`, `Delivery Profit (15%)`, `Total Commission Expenses`
+- Leaderboards untuk `Top Selling Products`, `Top Performing Tour Guides`, dan `Top Performing Artisans`
+- Recharts bar chart untuk visualisasi produk terlaris
+- Fetch data dari endpoint `GET /api/v1/analytics/summary`
+- Tampilan fallback mock data saat API belum tersedia
+
+## Pengaturan API
+
+Frontend mengambil data dari API yang dikonfigurasi pada `VITE_API_URL`.
+Jika tidak ditentukan, default akan menggunakan:
+```bash
+http://localhost:5000/api/v1
+```
+
+## Notes
+
+Pastikan backend sudah berjalan sebelum membuka halaman analytics agar data live dapat dimuat.
+
+## Kontribusi
+
+1. Checkout branch baru
+2. Buat perubahan di dalam `src/`
+3. Commit dan push
+4. Buat pull request

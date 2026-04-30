@@ -1,430 +1,302 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Area,
-  AreaChart
+  ResponsiveContainer
 } from 'recharts';
 import {
+  Trophy,
+  Star,
   TrendingUp,
-  TrendingDown,
-  DollarSign,
-  ShoppingCart,
-  Package,
-  Calendar,
-  Download,
-  Filter,
-  RefreshCw
+  ShieldCheck,
+  Sparkles,
+  ArrowUpRight
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-
 const formatRupiah = (value) => {
-  return `Rp ${Number(value || 0).toLocaleString('id-ID')}`;
+  const amount = Number(value || 0);
+  return `Rp ${amount.toLocaleString('id-ID')}`;
 };
 
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('id-ID');
+const mockData = {
+  totalRevenue: 178500000,
+  totalCommissionExpenses: 24250000,
+  netProfit: 94500000,
+  deliveryProfit: 18200000,
+  topSellingProducts: [
+    { productName: 'Patung Garuda Wisnu', totalQuantity: 72 },
+    { productName: 'Patung Ganesha', totalQuantity: 55 },
+    { productName: 'Patung Naga', totalQuantity: 43 },
+    { productName: 'Patung Buddha', totalQuantity: 31 },
+    { productName: 'Patung Barong', totalQuantity: 28 }
+  ],
+  topPerformingTourGuides: [
+    { tourGuide: 'Adi Putra', totalSales: 42000000 },
+    { tourGuide: 'Maya Arum', totalSales: 36500000 },
+    { tourGuide: 'Rizki Hadi', totalSales: 28700000 },
+    { tourGuide: 'Nina Saras', totalSales: 21400000 },
+    { tourGuide: 'Dian Prasetya', totalSales: 18900000 }
+  ],
+  topPerformingArtisans: [
+    { artisanName: 'Sari Dewi', totalQuantity: 84 },
+    { artisanName: 'Wayan Komang', totalQuantity: 68 },
+    { artisanName: 'Budi Santoso', totalQuantity: 57 },
+    { artisanName: 'Ika Putri', totalQuantity: 44 },
+    { artisanName: 'Gusti Made', totalQuantity: 39 }
+  ]
 };
 
 const AnalyticsReport = () => {
-  const [salesData, setSalesData] = useState([]);
+  const [analytics, setAnalytics] = useState(mockData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [dateRange, setDateRange] = useState({
-    from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days ago
-    to: new Date().toISOString().split('T')[0]
-  });
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Fetch sales data
-  const fetchSalesData = async () => {
-    try {
-      setRefreshing(true);
-      const response = await fetch(
-        `${API_URL}/sales/receipts?dateFrom=${dateRange.from}&dateTo=${dateRange.to}&limit=1000`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch sales data');
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSalesData(result.data);
-      } else {
-        throw new Error(result.message || 'Failed to load data');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
 
   useEffect(() => {
-    fetchSalesData();
-  }, [dateRange]);
+    const controller = new AbortController();
 
-  // Calculate KPIs
-  const kpis = useMemo(() => {
-    if (!salesData.length) return {};
+    const fetchAnalytics = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    const totalRevenue = salesData.reduce((sum, sale) => sum + sale.grandTotal, 0);
-    const totalTransactions = salesData.length;
-    const averageTransaction = totalRevenue / totalTransactions;
+        const response = await fetch(`${API_URL}/analytics/summary`, {
+          signal: controller.signal
+        });
 
-    // Daily sales trend
-    const dailySales = salesData.reduce((acc, sale) => {
-      const date = new Date(sale.soldAt).toISOString().split('T')[0];
-      acc[date] = (acc[date] || 0) + sale.grandTotal;
-      return acc;
-    }, {});
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
 
-    const dailyChartData = Object.entries(dailySales)
-      .map(([date, revenue]) => ({
-        date: formatDate(date),
-        revenue,
-        transactions: salesData.filter(sale =>
-          new Date(sale.soldAt).toISOString().split('T')[0] === date
-        ).length
-      }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+        const result = await response.json();
 
-    // Payment method distribution
-    const paymentMethods = salesData.reduce((acc, sale) => {
-      acc[sale.paymentMethod] = (acc[sale.paymentMethod] || 0) + 1;
-      return acc;
-    }, {});
-
-    const paymentChartData = Object.entries(paymentMethods).map(([method, count]) => ({
-      name: method.charAt(0).toUpperCase() + method.slice(1),
-      value: count,
-      percentage: ((count / totalTransactions) * 100).toFixed(1)
-    }));
-
-    // Revenue trend (compare with previous period)
-    const currentPeriodRevenue = totalRevenue;
-    const previousPeriodStart = new Date(dateRange.from);
-    previousPeriodStart.setDate(previousPeriodStart.getDate() - (new Date(dateRange.to) - new Date(dateRange.from)) / (24 * 60 * 60 * 1000));
-
-    const previousPeriodData = salesData.filter(sale =>
-      new Date(sale.soldAt) >= previousPeriodStart && new Date(sale.soldAt) < new Date(dateRange.from)
-    );
-    const previousPeriodRevenue = previousPeriodData.reduce((sum, sale) => sum + sale.grandTotal, 0);
-
-    const revenueChange = previousPeriodRevenue > 0
-      ? ((currentPeriodRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100
-      : 0;
-
-    return {
-      totalRevenue,
-      totalTransactions,
-      averageTransaction,
-      dailyChartData,
-      paymentChartData,
-      revenueChange
+        if (result.success && result.data) {
+          setAnalytics(result.data);
+        } else {
+          throw new Error(result.message || 'Invalid analytics response');
+        }
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setError('Unable to load analytics summary. Showing sample data.');
+          setAnalytics(mockData);
+        }
+      } finally {
+        setLoading(false);
+      }
     };
-  }, [salesData, dateRange]);
 
-  const handleDateChange = (field, value) => {
-    setDateRange(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+    fetchAnalytics();
+    return () => controller.abort();
+  }, []);
 
-  const handleRefresh = () => {
-    fetchSalesData();
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
-          <p className="text-gray-600">Loading analytics data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div className="flex items-center">
-          <div className="text-red-600">
-            <h3 className="text-sm font-medium">Error loading data</h3>
-            <p className="text-sm">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const {
+    totalRevenue,
+    totalCommissionExpenses,
+    netProfit,
+    deliveryProfit,
+    topSellingProducts,
+    topPerformingTourGuides,
+    topPerformingArtisans
+  } = analytics;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics Report</h1>
-          <p className="text-gray-600">Sales performance and insights</p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Date Range Filter */}
-          <div className="flex gap-2">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
-              <input
-                type="date"
-                value={dateRange.from}
-                onChange={(e) => handleDateChange('from', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-              <span className="text-gray-500">to</span>
-              <input
-                type="date"
-                value={dateRange.to}
-                onChange={(e) => handleDateChange('to', e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md text-sm"
-              />
-            </div>
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Analytics Report</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+              Business performance overview
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600">
+              Live KPI summary powered by your analytics API. The dashboard falls back to realistic sample data while loading or if the API cannot connect.
+            </p>
           </div>
-
-          {/* Refresh Button */}
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatRupiah(kpis.totalRevenue)}</p>
-            </div>
-            <DollarSign className="w-8 h-8 text-green-500" />
-          </div>
-          <div className="mt-2 flex items-center text-sm">
-            {kpis.revenueChange >= 0 ? (
-              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-            ) : (
-              <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-            )}
-            <span className={kpis.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}>
-              {Math.abs(kpis.revenueChange).toFixed(1)}% vs previous period
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-sm">
+            <Sparkles className="h-5 w-5 text-sky-500" />
+            <span className="text-sm font-medium text-slate-700">
+              {loading ? 'Loading live data...' : error ? 'Mock data active' : 'Live data connected'}
             </span>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Transactions</p>
-              <p className="text-2xl font-bold text-gray-900">{kpis.totalTransactions}</p>
-            </div>
-            <ShoppingCart className="w-8 h-8 text-blue-500" />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Average Transaction</p>
-              <p className="text-2xl font-bold text-gray-900">{formatRupiah(kpis.averageTransaction)}</p>
-            </div>
-            <Package className="w-8 h-8 text-purple-500" />
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Period</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {formatDate(dateRange.from)} - {formatDate(dateRange.to)}
-              </p>
-            </div>
-            <Calendar className="w-8 h-8 text-orange-500" />
-          </div>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Daily Sales Trend */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Daily Sales Trend</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={kpis.dailyChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis tickFormatter={formatRupiah} />
-              <Tooltip
-                formatter={(value) => [formatRupiah(value), 'Revenue']}
-                labelFormatter={(label) => `Date: ${label}`}
-              />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.3}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Payment Methods */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Methods</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={kpis.paymentChartData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percentage }) => `${name}: ${percentage}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {kpis.paymentChartData?.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Transactions per Day */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Transactions per Day</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={kpis.dailyChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip
-                formatter={(value) => [value, 'Transactions']}
-                labelFormatter={(label) => `Date: ${label}`}
-              />
-              <Bar dataKey="transactions" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Revenue vs Transactions */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue vs Transactions</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={kpis.dailyChartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis yAxisId="left" tickFormatter={formatRupiah} />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip
-                formatter={(value, name) => [
-                  name === 'revenue' ? formatRupiah(value) : value,
-                  name === 'revenue' ? 'Revenue' : 'Transactions'
-                ]}
-                labelFormatter={(label) => `Date: ${label}`}
-              />
-              <Legend />
-              <Bar yAxisId="left" dataKey="revenue" fill="#8884d8" name="Revenue" />
-              <Line yAxisId="right" type="monotone" dataKey="transactions" stroke="#82ca9d" name="Transactions" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Recent Transactions Table */}
-      <div className="bg-white rounded-lg shadow-sm border">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Receipt
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Payment
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Items
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {salesData.slice(0, 10).map((sale) => (
-                <tr key={sale._id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {sale.receiptNumber}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(sale.soldAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {formatRupiah(sale.grandTotal)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {sale.paymentMethod}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {sale.totalItems}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {salesData.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            No sales data available for the selected period
+        {error && (
+          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm">
+            {error}
           </div>
         )}
+
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-500">Total Revenue</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-900">
+                    {formatRupiah(totalRevenue)}
+                  </p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-600">
+                  <ArrowUpRight className="h-5 w-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-slate-500">
+                Revenue from sales and services across the analytics period.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-500">Net Profit</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-900">{formatRupiah(netProfit)}</p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                  <ShieldCheck className="h-5 w-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-slate-500">
+                Net earnings after commissions and operational costs.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-500">Delivery Profit (15%)</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-900">{formatRupiah(deliveryProfit)}</p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-slate-500">
+                Profit contribution from premium delivery pricing.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-500">Total Commission Expenses</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-900">{formatRupiah(totalCommissionExpenses)}</p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+                  <Trophy className="h-5 w-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-slate-500">
+                Total commission payouts to artisans and tour guides.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  Product velocity
+                </p>
+                <h2 className="mt-2 text-xl font-semibold text-slate-900">Top selling products</h2>
+              </div>
+              <div className="rounded-2xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700">
+                {topSellingProducts.length} items
+              </div>
+            </div>
+
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topSellingProducts} margin={{ top: 8, right: 0, left: -12, bottom: 0 }}>
+                  <XAxis dataKey="productName" tick={{ fill: '#64748b', fontSize: 12 }} tickLine={false} axisLine={false} interval={0} angle={-20} textAnchor="end" height={70} />
+                  <YAxis tick={{ fill: '#64748b', fontSize: 12 }} tickLine={false} axisLine={false} />
+                  <Tooltip formatter={(value) => [`${value} units`, 'Quantity']} cursor={{ fill: 'rgba(56, 189, 248, 0.08)' }} />
+                  <Bar dataKey="totalQuantity" fill="#0ea5e9" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <section className="mt-10 grid gap-6 xl:grid-cols-3">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-slate-500">Top Selling Products</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900">Quantity leaderboard</h3>
+              </div>
+              <div className="rounded-2xl bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700">
+                <Trophy className="inline-block h-4 w-4 align-middle" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {topSellingProducts.map((item, index) => (
+                <div key={item.productName} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{item.productName}</p>
+                    <p className="text-sm text-slate-500">Rank {index + 1}</p>
+                  </div>
+                  <span className="rounded-full bg-slate-900 px-3 py-1 text-sm font-semibold text-white">
+                    {item.totalQuantity}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-slate-500">Top Tour Guides</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900">Revenue leaders</h3>
+              </div>
+              <div className="rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">
+                <Star className="inline-block h-4 w-4 align-middle" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {topPerformingTourGuides.map((item, index) => (
+                <div key={item.tourGuide} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{item.tourGuide}</p>
+                    <p className="text-sm text-slate-500">Sales: {formatRupiah(item.totalSales)}</p>
+                  </div>
+                  <span className="rounded-full bg-emerald-900 px-3 py-1 text-sm font-semibold text-white">
+                    #{index + 1}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-slate-500">Top Artisans</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900">Production champions</h3>
+              </div>
+              <div className="rounded-2xl bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-700">
+                <TrendingUp className="inline-block h-4 w-4 align-middle" />
+              </div>
+            </div>
+            <div className="space-y-4">
+              {topPerformingArtisans.map((item, index) => (
+                <div key={item.artisanName} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">{item.artisanName}</p>
+                    <p className="text-sm text-slate-500">Items sold: {item.totalQuantity}</p>
+                  </div>
+                  <span className="rounded-full bg-violet-900 px-3 py-1 text-sm font-semibold text-white">
+                    #{index + 1}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
