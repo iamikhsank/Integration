@@ -22,10 +22,7 @@ function cleanMonetaryValue(value) {
 // Connect to MongoDB
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/kriyalogic', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/kriyalogic');
     console.log('Connected to MongoDB');
   } catch (error) {
     console.error('MongoDB connection error:', error);

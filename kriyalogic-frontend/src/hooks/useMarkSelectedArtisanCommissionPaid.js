@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 const useMarkSelectedArtisanCommissionPaid = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { token, logout } = useAuth();
+    const { token } = useAuth();
 
     const markSelectedPaid = async ({ artisanId, commissionIds }) => {
         if (!token) return;

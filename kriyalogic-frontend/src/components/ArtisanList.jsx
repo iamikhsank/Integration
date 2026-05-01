@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pencil, Trash2, User2 } from 'lucide-react';
 
-const ArtisanList = ({ artisans, selectedArtisan, onSelectArtisan, onEdit, onDelete, searchQuery }) => {
+const ArtisanList = ({ artisans, selectedArtisan, onSelectArtisan, onEdit, searchQuery }) => {
     const highlightText = (text) => {
         if (!searchQuery || !text) return text || '-';
         

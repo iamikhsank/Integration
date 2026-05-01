@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Save, Eye, EyeOff } from 'lucide-react';
 import useUpdateCashier from '../hooks/useUpdateCashier';
 import toast from 'react-hot-toast';
@@ -13,7 +13,7 @@ const EditCashierModal = ({ isOpen, onClose, onSuccess, cashier }) => {
         status: 'active'
     });
 
-    useEffect(() => {
+    const initializeFormData = useCallback(() => {
         if (cashier) {
             setFormData({
                 username: cashier.username || cashier.name || '',
@@ -23,6 +23,10 @@ const EditCashierModal = ({ isOpen, onClose, onSuccess, cashier }) => {
             });
         }
     }, [cashier]);
+
+    useEffect(() => {
+        initializeFormData();
+    }, [initializeFormData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

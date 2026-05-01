@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const useExportArtisanCommissionsExcel = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { token, logout } = useAuth();
+    const { token } = useAuth();
 
     const exportExcel = async ({
         id,

@@ -103,7 +103,7 @@ const OrderPaymentPage = () => {
         };
     }, []);
 
-    const { checkout, loading: isSubmitting, error: checkoutError, setError: alert } = useCheckout();
+    const { checkout, loading: isSubmitting, error: _checkoutError, setError: _alert } = useCheckout();
 
     const subtotal = useMemo(() => {
         if (orderState.subtotal !== undefined) {
@@ -299,7 +299,7 @@ const OrderPaymentPage = () => {
 
             pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight);
             pdf.save(`receipt-${receiptPopup?.receiptNumber || 'transaction'}.pdf`);
-        } catch (error) {
+        } catch (_error) {
             toast.error('Failed to generate receipt PDF');
         } finally {
             const guideCommissionEl = receiptPdfRef.current?.querySelector('.receipt-guide-commission');

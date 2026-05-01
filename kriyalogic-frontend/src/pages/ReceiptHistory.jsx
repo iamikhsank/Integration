@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import logoImage from '../../public/logo.png';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
+import toast from 'react-hot-toast';
 
 const formatRupiah = (value) => {
     return `Rp. ${Number(value || 0).toLocaleString('id-ID')}`;

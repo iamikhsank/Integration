@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useUpdateGuide from '../hooks/useUpdateGuide';
 import toast from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ const EditTourGuideModal = ({ isOpen, onClose, onSuccess, guide }) => {
         status: 'active'
     });
 
-    useEffect(() => {
+    const initializeFormData = useCallback(() => {
         if (guide) {
             setFormData({
                 guideName: guide.guideName || '',
@@ -23,6 +23,10 @@ const EditTourGuideModal = ({ isOpen, onClose, onSuccess, guide }) => {
             });
         }
     }, [guide]);
+
+    useEffect(() => {
+        initializeFormData();
+    }, [initializeFormData]);
 
     if (!isOpen) return null;
 

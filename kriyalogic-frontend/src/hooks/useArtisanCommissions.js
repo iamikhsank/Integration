@@ -13,7 +13,7 @@ const useArtisanCommissions = ({
     const [artisanName, setArtisanName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { token, logout } = useAuth();
+    const { token } = useAuth();
 
     const fetchArtisanCommissions = useCallback(async () => {
         if (!id || !token) {
@@ -85,7 +85,7 @@ const useArtisanCommissions = ({
         } finally {
             setLoading(false);
         }
-    }, [id, search, status, fromDate, toDate]);
+    }, [id, search, status, fromDate, toDate, token]);
 
     useEffect(() => {
         fetchArtisanCommissions();

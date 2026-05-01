@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useUpdateArtisan from '../hooks/useUpdateArtisan';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -14,7 +14,7 @@ const EditArtisanModal = ({ isOpen, onClose, onSuccess, artisan }) => {
         status: 'active'
     });
 
-    useEffect(() => {
+    const initializeFormData = useCallback(() => {
         if (artisan) {
             setFormData({
                 fullName: artisan.fullName || '',
@@ -26,6 +26,10 @@ const EditArtisanModal = ({ isOpen, onClose, onSuccess, artisan }) => {
             });
         }
     }, [artisan]);
+
+    useEffect(() => {
+        initializeFormData();
+    }, [initializeFormData]);
 
     if (!isOpen) return null;
 

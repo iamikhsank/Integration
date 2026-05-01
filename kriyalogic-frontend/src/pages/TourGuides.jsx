@@ -41,8 +41,8 @@ const TourGuides = () => {
         setIsEditModalOpen(true);
     };
 
-    const handleDeleteClick = (id) => {
-        setGuideToDelete(id);
+    const handleDeleteClick = (_id) => {
+        setGuideToDelete(_id);
         setIsDeleteModalOpen(true);
     };
 
@@ -164,7 +164,7 @@ const TourGuides = () => {
                                                 >
                                                     <Pencil size={18} />
                                                 </button>
-                                                {/* <button 
+                                                <button
                                                     className="text-red-600 hover:text-red-800"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -172,7 +172,7 @@ const TourGuides = () => {
                                                     }}
                                                 >
                                                     <Trash2 size={18} />
-                                                </button> */}
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>

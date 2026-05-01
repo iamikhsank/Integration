@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expirationTime = payload.exp * 1000; // Convert to milliseconds
       return Date.now() >= expirationTime;
-    } catch (e) {
+    } catch {
       return true;
     }
   };

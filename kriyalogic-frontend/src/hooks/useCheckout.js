@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 const useCheckout = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const { token, logout } = useAuth();
+    const { token } = useAuth();
 
     const checkout = async (payload) => {
         if (!token) return;
@@ -30,7 +30,7 @@ const useCheckout = () => {
             if (rawText && contentType.includes('application/json')) {
                 try {
                     result = JSON.parse(rawText);
-                } catch (parseError) {
+                } catch {
                     throw new Error('Invalid JSON response from server');
                 }
             }
