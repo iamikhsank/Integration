@@ -7,6 +7,9 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "seed": "node src/scripts/seed.js",
+    "seed:analytics": "node src/scripts/seed_analytics.js",
+    "seed:forecast": "node src/scripts/seed_forecast.js",
+    "seed:all": "npm run seed && npm run seed:analytics && npm run seed:forecast",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

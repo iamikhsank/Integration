@@ -71,27 +71,42 @@ const AnalyticsReport = () => {
         if (toDate) queryParams.set('to', toDate);
 
         const queryString = queryParams.toString();
-        const response = await fetch(
-          `${API_URL}/analytics/summary${queryString ? `?${queryString}` : ''}`,
-          {
-            signal: controller.signal
-          }
-        );
+        const url = `${API_URL}/analytics/summary${queryString ? `?${queryString}` : ''}`;
+        
+        console.log(`📊 Fetching analytics from: ${url}`);
+        const response = await fetch(url, {
+          signal: controller.signal
+        });
+
+        console.log(`Response Status: ${response.status}`);
 
         if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
+          const errorData = await response.json().catch(() => null);
+          throw new Error(`Server error ${response.status}: ${errorData?.message || 'Unknown error'}`);
         }
 
         const result = await response.json();
 
         if (result.success && result.data) {
+          console.log('✓ Analytics data loaded successfully');
           setAnalytics(result.data);
         } else {
-          throw new Error(result.message || 'Invalid analytics response');
+          throw new Error(result.message || 'Invalid analytics response - no data returned');
         }
       } catch (err) {
         if (err.name !== 'AbortError') {
-          setError('Unable to load analytics summary. Showing sample data.');
+          console.error('❌ Analytics fetch error:', err.message);
+          let userMessage = 'Unable to load analytics summary. ';
+          
+          if (err.message.includes('Failed to fetch')) {
+            userMessage += 'Cannot connect to API server. Showing sample data.';
+          } else if (err.message.includes('Invalid analytics response')) {
+            userMessage += 'Ensure analytics data has been seeded: npm run seed:analytics';
+          } else {
+            userMessage += 'Showing sample data while loading.';
+          }
+          
+          setError(userMessage);
           setAnalytics(mockData);
         }
       } finally {

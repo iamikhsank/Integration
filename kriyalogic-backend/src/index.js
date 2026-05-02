@@ -31,34 +31,49 @@ app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Connect to Database
-connectDB();
+const startServer = async () => {
+  try {
+    console.log('Starting KriyaLogic Backend Server...');
+    
+    // Establish database connection
+    await connectDB();
+    
+    // Routes
+    const apiRoutes = express.Router();
 
-// Routes
-const apiRoutes = express.Router();
+    // Mount Auth Routes
+    apiRoutes.use('/auth', authRoutes);
+    apiRoutes.use('/users', userRoutes);
+    apiRoutes.use('/artisans', artisanRoutes);
+    apiRoutes.use('/guides', guideRoutes);
+    apiRoutes.use('/master-products', masterProductRoutes);
+    apiRoutes.use('/categories', categoryRoutes);
+    apiRoutes.use('/child-items', childProductRoutes);
+    apiRoutes.use('/sales', saleRoutes);
+    apiRoutes.use('/pos', posRoutes);
+    apiRoutes.use('/forecast', forecastRoutes);
+    apiRoutes.use('/analytics', analyticsRoutes);
 
-// Mount Auth Routes
-apiRoutes.use('/auth', authRoutes);
-apiRoutes.use('/users', userRoutes);
-apiRoutes.use('/artisans', artisanRoutes);
-apiRoutes.use('/guides', guideRoutes);
-apiRoutes.use('/master-products', masterProductRoutes);
-apiRoutes.use('/categories', categoryRoutes);
-apiRoutes.use('/child-items', childProductRoutes);
-apiRoutes.use('/sales', saleRoutes);
-apiRoutes.use('/pos', posRoutes);
-apiRoutes.use('/forecast', forecastRoutes);
-apiRoutes.use('/analytics', analyticsRoutes);
+    apiRoutes.get('/', (req, res) => {
+      res.status(200).json({
+        success: true,
+        message: 'Welcome to KriyaLogic API v1',
+        version: '1.0.0'
+      });
+    });
 
-apiRoutes.get('/', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Welcome to KriyaLogic API v1',
-    version: '1.0.0'
-  });
-});
+    app.use('/api/v1', apiRoutes);
 
-app.use('/api/v1', apiRoutes);
+    app.listen(PORT, () => {
+      console.log(`✓ Server successfully running on port ${PORT}`);
+      console.log(`  - Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`  - API URL: http://localhost:${PORT}/api/v1`);
+    });
+  } catch (error) {
+    console.error('✗ Failed to start server');
+    console.error(`  - Error: ${error.message}`);
+    process.exit(1);
+  }
+};
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+startServer();
