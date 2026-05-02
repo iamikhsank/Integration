@@ -4,6 +4,16 @@ const DeliveryRecord = require('../models/DeliveryRecord');
 // Get analytics summary using aggregation pipelines
 const getAnalyticsSummary = async (req, res) => {
   try {
+    console.log('📊 Fetching analytics summary...');
+
+    // Check if AnalyticsRecord collection exists and has data
+    const recordCount = await AnalyticsRecord.countDocuments();
+    console.log(`✓ Found ${recordCount} AnalyticsRecord documents`);
+
+    if (recordCount === 0) {
+      console.warn('⚠ No AnalyticsRecord data found. Please seed data: npm run seed:analytics');
+    }
+
     // Aggregate totals from AnalyticsRecord
     const analyticsTotals = await AnalyticsRecord.aggregate([
       {

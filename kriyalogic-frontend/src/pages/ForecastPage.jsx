@@ -73,6 +73,7 @@ const ForecastPage = () => {
       setError(null);
 
       try {
+        console.log(`📊 Fetching forecast for: ${selectedProduct}`);
         const response = await fetch(`${API_URL}/forecast/${encodeURIComponent(selectedProduct)}`, {
           method: 'GET',
           headers: {
@@ -80,13 +81,18 @@ const ForecastPage = () => {
           }
         });
 
+        console.log(`Response Status: ${response.status}`);
+
         if (!response.ok) {
-          throw new Error('Failed to fetch forecast data');
+          const errorData = await response.json().catch(() => null);
+          const errorMessage = errorData?.message || `Server error: ${response.status}`;
+          throw new Error(errorMessage);
         }
 
         const result = await response.json();
+        console.log(`✓ Received ${result.count || result.data?.length || 0} forecast records`);
 
-        if (result.success) {
+        if (result.success && result.data) {
           // Transform data for chart
           const transformedData = result.data.map(item => ({
             date: new Date(item.forecast_date).toLocaleDateString('id-ID'),
@@ -98,10 +104,20 @@ const ForecastPage = () => {
 
           setForecastData(transformedData);
         } else {
-          throw new Error(result.message || 'Failed to load data');
+          throw new Error(result.message || 'No data available - ensure forecast data has been seeded');
         }
       } catch (err) {
-        setError(err.message);
+        console.error('❌ Forecast fetch error:', err.message);
+        
+        // Provide helpful error messages
+        let userMessage = err.message;
+        if (err.message.includes('Failed to fetch')) {
+          userMessage = 'Cannot connect to API server. Please ensure the backend is running on port 5000.';
+        } else if (err.message.includes('No forecast data found')) {
+          userMessage = `No forecast data found for "${selectedProduct}". Please run the seed script: npm run seed:forecast`;
+        }
+        
+        setError(userMessage);
         setForecastData([]);
       } finally {
         setLoading(false);
@@ -361,16 +377,16 @@ const ForecastPage = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider">
                       Date
                     </th>
-                    <th className=\"px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider\">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider">
                       Predicted Quantity
                     </th>
-                    <th className=\"px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider\">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider">
                       Lower Bound
                     </th>
-                    <th className=\"px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider\">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider">
                       Upper Bound
                     </th>
-                    <th className=\"px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider\">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider">
                       Range
                     </th>
                   </tr>
