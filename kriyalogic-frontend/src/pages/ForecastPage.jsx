@@ -193,7 +193,7 @@ const ForecastPage = () => {
               id="product-select"
               value={selectedProduct}
               onChange={(e) => setSelectedProduct(e.target.value)}
-              className="block w-full max-w-xs px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFF8F3] shadow-sm focus:outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
+              className="block w-full max-w-xs px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFFFFF] shadow-sm focus:outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
             >
               {availableProducts.length > 0 ? (
                 availableProducts.map(product => (
@@ -216,7 +216,7 @@ const ForecastPage = () => {
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="block w-full px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFF8F3] outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
+                className="block w-full px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFFFFF] outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
               />
             </div>
             <div>
@@ -228,7 +228,7 @@ const ForecastPage = () => {
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="block w-full px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFF8F3] outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
+                className="block w-full px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFFFFF] outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
               />
             </div>
           </div>
@@ -236,7 +236,7 @@ const ForecastPage = () => {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-[#FFF8F3] p-6 rounded-lg shadow-sm border border-[#A97A47]">
+          <div className="bg-[#FFFFFF] p-6 rounded-lg shadow-sm border border-[#A97A47]">
             <div className="flex items-center">
               <DollarSign className="h-8 w-8 text-[#FF6900] mr-3" />
               <div>
@@ -249,7 +249,7 @@ const ForecastPage = () => {
             </div>
           </div>
 
-          <div className="bg-[#FFF8F3] p-6 rounded-lg shadow-sm border border-[#A97A47]">
+          <div className="bg-[#FFFFFF] p-6 rounded-lg shadow-sm border border-[#A97A47]">
             <div className="flex items-center">
               <Target className="h-8 w-8 text-[#FF6900] mr-3" />
               <div>
@@ -287,7 +287,7 @@ const ForecastPage = () => {
 
         {/* AI Insight */}
         {!loading && !error && filteredForecastData.length > 0 && (
-          <div className="bg-[#FFF8F3] border border-[#A97A47] rounded-lg p-6 mb-8">
+          <div className="bg-[#FFFFFF] border border-[#A97A47] rounded-lg p-6 mb-8">
             <div className="flex items-start">
               <Sparkles className="h-6 w-6 text-[#FF6900] mr-3 mt-0.5" />
               <div>
@@ -323,7 +323,7 @@ const ForecastPage = () => {
 
         {/* Chart */}
         {!loading && !error && filteredForecastData.length > 0 && (
-          <div className="bg-[#FFF8F3] p-6 rounded-lg shadow-sm border border-[#A97A47] mb-8">
+          <div className="bg-[#FFFFFF] p-6 rounded-lg shadow-sm border border-[#A97A47] mb-8">
             <h2 className="text-lg font-semibold text-[#4E3629] mb-4">
               Sales Forecast for {selectedProduct}
             </h2>
@@ -342,7 +342,7 @@ const ForecastPage = () => {
                     dataKey="upper"
                     stackId="1"
                     stroke="none"
-                    fill="#e3f2fd"
+                    fill="#FFFFFF"
                     fillOpacity={0.3}
                   />
                   <Area
@@ -350,7 +350,7 @@ const ForecastPage = () => {
                     dataKey="lower"
                     stackId="1"
                     stroke="none"
-                    fill="#ffffff"
+                    fill="#4E3629"
                     fillOpacity={1}
                   />
 
@@ -384,13 +384,13 @@ const ForecastPage = () => {
 
         {/* Data Table */}
         {!loading && !error && filteredForecastData.length > 0 && (
-          <div className="bg-[#FFF8F3] rounded-lg shadow-sm border border-[#A97A47] overflow-hidden">
+          <div className="bg-[#FFFFFF] rounded-lg shadow-sm border border-[#A97A47] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#A97A47]">
               <h3 className="text-lg font-medium text-[#4E3629]">Forecast Details</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-[#A97A47]">
-                <thead className="bg-[#FFF0E6]">
+                <thead className="bg-[#F9FAFB]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-[#4E3629] uppercase tracking-wider">
                       Date
@@ -411,7 +411,7 @@ const ForecastPage = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {filteredForecastData.map((item, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-[#FFF0E6]'}>
+                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
                         {item.date}
                       </td>

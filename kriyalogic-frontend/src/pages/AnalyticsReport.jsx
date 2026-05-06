@@ -129,7 +129,7 @@ const AnalyticsReport = () => {
   } = analytics;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#3D312B]">
+    <div className="min-h-screen bg-[#FFFFFF] text-[#3D312B]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -141,7 +141,7 @@ const AnalyticsReport = () => {
               Live KPI summary powered by your analytics API. The dashboard falls back to realistic sample data while loading or if the API cannot connect.
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#A97A47] bg-[#FFF8F3] px-4 py-2 shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#A97A47] bg-[#FFFFFF] px-4 py-2 shadow-sm">
             <Sparkles className="h-5 w-5 text-[#FF6900]" />
             <span className="text-sm font-medium text-[#4E3629]">
               {loading ? 'Loading live data...' : error ? 'Mock data active' : 'Live data connected'}
@@ -156,7 +156,7 @@ const AnalyticsReport = () => {
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full h-12 rounded-xl border border-[#A97A47] bg-[#FFF8F3] px-4 outline-none focus:ring-2 focus:ring-[#FF6900]"
+              className="w-full h-12 rounded-xl border border-[#A97A47] bg-[#FFFFFF] px-4 outline-none focus:ring-2 focus:ring-[#FF6900]"
             />
           </div>
           <div className="space-y-2">
@@ -165,11 +165,11 @@ const AnalyticsReport = () => {
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full h-12 rounded-xl border border-[#A97A47] bg-[#FFF8F3] px-4 outline-none focus:ring-2 focus:ring-[#FF6900]"
+              className="w-full h-12 rounded-xl border border-[#A97A47] bg-[#FFFFFF] px-4 outline-none focus:ring-2 focus:ring-[#FF6900]"
             />
           </div>
           <div className="col-span-2 flex items-end justify-end">
-            <div className="rounded-2xl bg-[#FFF0E6] px-4 py-3 text-sm font-medium text-[#4E3629] shadow-sm border border-[#A97A47]">
+            <div className="rounded-2xl bg-[#FFFFFF] px-4 py-3 text-sm font-medium text-[#4E3629] shadow-sm border border-[#A97A47]">
               {fromDate || toDate ? `${fromDate || 'Any'} → ${toDate || 'Any'}` : 'No date filter selected'}
             </div>
           </div>
@@ -183,7 +183,7 @@ const AnalyticsReport = () => {
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
-            <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-[#4E3629]">Total Revenue</p>
@@ -200,7 +200,7 @@ const AnalyticsReport = () => {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-[#4E3629]">Net Profit</p>
@@ -215,7 +215,7 @@ const AnalyticsReport = () => {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-[#4E3629]">Delivery Profit (15%)</p>
@@ -230,7 +230,7 @@ const AnalyticsReport = () => {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+            <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-[#4E3629]">Total Commission Expenses</p>
@@ -246,7 +246,7 @@ const AnalyticsReport = () => {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4E3629]">
@@ -265,7 +265,7 @@ const AnalyticsReport = () => {
                   <XAxis dataKey="productName" tick={{ fill: '#4E3629', fontSize: 12 }} tickLine={false} axisLine={false} interval={0} angle={-20} textAnchor="end" height={70} />
                   <YAxis tick={{ fill: '#4E3629', fontSize: 12 }} tickLine={false} axisLine={false} />
                   <Tooltip formatter={(value) => [`${value} units`, 'Quantity']} cursor={{ fill: 'rgba(78, 54, 41, 0.12)' }} />
-                  <Bar dataKey="totalQuantity" fill="#FF6900" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="totalQuantity" fill="#4E3629" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -273,7 +273,7 @@ const AnalyticsReport = () => {
         </div>
 
         <section className="mt-10 grid gap-6 xl:grid-cols-3">
-          <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-[#4E3629]">Top Selling Products</p>
@@ -285,12 +285,12 @@ const AnalyticsReport = () => {
             </div>
             <div className="space-y-4">
               {topSellingProducts.map((item, index) => (
-                <div key={item.productName} className="flex items-center justify-between rounded-2xl border border-[#A97A47] bg-[#FFF0E6] px-4 py-3">
+                <div key={item.productName} className="flex items-center justify-between rounded-2xl border border-[#A97A47] bg-[#FFFFFF] px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold text-[#3D312B]">{item.productName}</p>
                     <p className="text-sm text-[#4E3629]">Rank {index + 1}</p>
                   </div>
-                  <span className="rounded-full bg-[#FF6900] px-3 py-1 text-sm font-semibold text-white">
+                  <span className="rounded-full bg-[#4E3629] px-3 py-1 text-sm font-semibold text-white">
                     {item.totalQuantity}
                   </span>
                 </div>
@@ -298,7 +298,7 @@ const AnalyticsReport = () => {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-[#4E3629]">Top Tour Guides</p>
@@ -310,7 +310,7 @@ const AnalyticsReport = () => {
             </div>
             <div className="space-y-4">
               {topPerformingTourGuides.map((item, index) => (
-                <div key={item.tourGuide} className="flex items-center justify-between rounded-2xl border border-[#A97A47] bg-[#FFF0E6] px-4 py-3">
+                <div key={item.tourGuide} className="flex items-center justify-between rounded-2xl border border-[#A97A47] bg-[#FFFFFF] px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold text-[#3D312B]">{item.tourGuide}</p>
                     <p className="text-sm text-[#4E3629]">Sales: {formatRupiah(item.totalSales)}</p>
@@ -323,7 +323,7 @@ const AnalyticsReport = () => {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-[#A97A47] bg-[#FFF8F3] p-6 shadow-sm">
+          <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-[#4E3629]">Top Artisans</p>
