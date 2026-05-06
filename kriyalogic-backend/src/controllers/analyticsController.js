@@ -1,5 +1,7 @@
 const AnalyticsRecord = require('../models/AnalyticsRecord');
 const DeliveryRecord = require('../models/DeliveryRecord');
+const { exec } = require('child_process');
+const path = require('path');
 
 // Get analytics summary using aggregation pipelines
 const getAnalyticsSummary = async (req, res) => {
@@ -7,11 +9,38 @@ const getAnalyticsSummary = async (req, res) => {
     console.log('📊 Fetching analytics summary...');
 
     // Check if AnalyticsRecord collection exists and has data
-    const recordCount = await AnalyticsRecord.countDocuments();
+    let recordCount = await AnalyticsRecord.countDocuments();
     console.log(`✓ Found ${recordCount} AnalyticsRecord documents`);
 
     if (recordCount === 0) {
-      console.warn('⚠ No AnalyticsRecord data found. Please seed data: npm run seed:analytics');
+      console.warn('⚠ No AnalyticsRecord data found. Attempting to seed data automatically...');
+      
+      try {
+        await new Promise((resolve, reject) => {
+          const backendDir = path.resolve(__dirname, '../../');
+          console.log(`Running seed:analytics in ${backendDir}`);
+          
+          exec('npm run seed:analytics', {
+            cwd: backendDir
+          }, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error executing seed script: ${error.message}`);
+              return reject(error);
+            }
+            if (stderr && !stderr.includes('npm WARN')) {
+              console.warn(`Seed Script Warning/Error output: ${stderr}`);
+            }
+            console.log(`Seed Script Output:\n${stdout}`);
+            resolve();
+          });
+        });
+
+        // Re-check count after seeding
+        recordCount = await AnalyticsRecord.countDocuments();
+        console.log(`✓ Post-seed check: Found ${recordCount} AnalyticsRecord documents`);
+      } catch (seedError) {
+        console.error('Failed to automatically seed analytics data:', seedError);
+      }
     }
 
     // Aggregate totals from AnalyticsRecord

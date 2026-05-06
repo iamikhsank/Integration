@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { exec } = require('child_process');
+const path = require('path');
 const ForecastResult = require('../models/ForecastResult');
 const MasterProduct = require('../models/MasterProduct');
 const asyncHandler = require('../middleware/asyncHandler');
@@ -24,6 +26,8 @@ const getForecastByParentCode = asyncHandler(async (req, res) => {
     let forecasts = await ForecastResult.find({ product_code: parent_code })
       .sort({ forecast_date: 1 });
 
+    let actualCode = parent_code;
+    
     // If no results, try to find the master product by name and then get its code
     if (!forecasts || forecasts.length === 0) {
       console.log(`No forecast found for product_code: ${parent_code}, searching by product name...`);
@@ -32,16 +36,53 @@ const getForecastByParentCode = asyncHandler(async (req, res) => {
       
       if (masterProduct) {
         console.log(`Found master product: ${masterProduct.productName} with code: ${masterProduct.parentCode}`);
-        forecasts = await ForecastResult.find({ product_code: masterProduct.parentCode })
+        actualCode = masterProduct.parentCode;
+        forecasts = await ForecastResult.find({ product_code: actualCode })
           .sort({ forecast_date: 1 });
       }
     }
 
+    // Dynamic generation if still not found
     if (!forecasts || forecasts.length === 0) {
-      console.warn(`⚠ No forecast data found for identifier: ${parent_code}`);
+      console.log(`No forecast data found for identifier: ${actualCode}. Generating dynamically via ML Engine...`);
+      
+      try {
+        await new Promise((resolve, reject) => {
+          const scriptPath = path.resolve(__dirname, '../../../../ai_engine/ml_forecasting.py');
+          const pythonExec = path.resolve(__dirname, '../../../../.venv/bin/python');
+          const engineDir = path.resolve(__dirname, '../../../../ai_engine');
+
+          console.log(`Running: ${pythonExec} ${scriptPath} ${actualCode}`);
+          
+          exec(`"${pythonExec}" "${scriptPath}" "${actualCode}"`, {
+            cwd: engineDir
+          }, (error, stdout, stderr) => {
+            if (error) {
+              console.error(`Error executing ML script: ${error.message}`);
+              return reject(error);
+            }
+            if (stderr) {
+              console.warn(`ML Script Warning/Error output: ${stderr}`);
+            }
+            console.log(`ML Script Output:\n${stdout}`);
+            resolve();
+          });
+        });
+
+        // Try to fetch again after generation
+        forecasts = await ForecastResult.find({ product_code: actualCode })
+          .sort({ forecast_date: 1 });
+
+      } catch (genError) {
+        console.error('Failed to generate forecast dynamically:', genError);
+      }
+    }
+
+    if (!forecasts || forecasts.length === 0) {
+      console.warn(`⚠ Still no forecast data found after dynamic generation for identifier: ${actualCode}`);
       return res.status(404).json({
         success: false,
-        message: `No forecast data found for product: ${parent_code}. Please ensure forecast data has been seeded.`,
+        message: `No forecast data found for product: ${parent_code}. Dynamic generation also failed or no historical sales data available.`,
         identifier: parent_code
       });
     }

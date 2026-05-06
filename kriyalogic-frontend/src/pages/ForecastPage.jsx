@@ -25,17 +25,6 @@ import {
   Sparkles
 } from 'lucide-react';
 
-// Mock data for parent products - in real app, fetch from API
-const PARENT_PRODUCTS = [
-  { value: 'Patung Buddha', label: 'Patung Buddha' },
-  { value: 'Patung Ganesha', label: 'Patung Ganesha' },
-  { value: 'Patung Naga', label: 'Patung Naga' },
-  { value: 'Patung Garuda Wisnu', label: 'Patung Garuda Wisnu' },
-  { value: 'Patung Abstrak Modern', label: 'Patung Abstrak Modern' },
-  { value: 'Patung Barong', label: 'Patung Barong' },
-  { value: 'Patung Harimau', label: 'Patung Harimau' }
-];
-
 // Helper function to generate AI Insight text
 const generateAIInsight = (productName, trend) => {
   switch (trend) {
@@ -51,10 +40,35 @@ const generateAIInsight = (productName, trend) => {
 const ForecastPage = () => {
   const [selectedProduct, setSelectedProduct] = useState('Patung Garuda Wisnu');
   const [forecastData, setForecastData] = useState([]);
+  const [availableProducts, setAvailableProducts] = useState([]);
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Fetch available products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/forecast/products/list`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            const products = result.data.map(p => ({
+              value: p.productName, // use productName or parentCode as needed, original used productName
+              label: p.productName
+            }));
+            setAvailableProducts(products);
+            // If the current selected product is not in the list but list has items, maybe select first?
+            // Optional: setSelectedProduct(products[0].value) if needed.
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const filteredForecastData = forecastData.filter((item) => {
     const itemDate = new Date(item.fullDate);
@@ -113,8 +127,8 @@ const ForecastPage = () => {
         let userMessage = err.message;
         if (err.message.includes('Failed to fetch')) {
           userMessage = 'Cannot connect to API server. Please ensure the backend is running on port 5000.';
-        } else if (err.message.includes('No forecast data found')) {
-          userMessage = `No forecast data found for "${selectedProduct}". Please run the seed script: npm run seed:forecast`;
+        } else if (err.message.includes('No forecast data found') || err.message.includes('Dynamic generation also failed')) {
+          userMessage = `No historical sales data found to generate forecast for "${selectedProduct}". Please ensure there are enough sales transactions first.`;
         }
         
         setError(userMessage);
@@ -181,11 +195,15 @@ const ForecastPage = () => {
               onChange={(e) => setSelectedProduct(e.target.value)}
               className="block w-full max-w-xs px-3 py-2 border border-[#A97A47] rounded-md bg-[#FFF8F3] shadow-sm focus:outline-none focus:ring-[#FF6900] focus:border-[#FF6900] text-[#3D312B]"
             >
-              {PARENT_PRODUCTS.map(product => (
-                <option key={product.value} value={product.value}>
-                  {product.label}
-                </option>
-              ))}
+              {availableProducts.length > 0 ? (
+                availableProducts.map(product => (
+                  <option key={product.value} value={product.value}>
+                    {product.label}
+                  </option>
+                ))
+              ) : (
+                <option value={selectedProduct}>{selectedProduct}</option>
+              )}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4 max-w-md">

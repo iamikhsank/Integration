@@ -46,7 +46,8 @@ async function seedForecastResults() {
     let rowCount = 0;
     let productIndex = 0;
 
-    fs.createReadStream('./df_mentah_prophet_pipeline.csv')
+    const dataPath = require('path').resolve(__dirname, '../../data/df_mentah_prophet_pipeline.csv');
+    fs.createReadStream(dataPath)
       .pipe(csv())
       .on('data', (data) => {
         try {
