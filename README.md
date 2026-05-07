@@ -25,7 +25,9 @@ Integration/
 ├── ai_engine/
 │   ├── ml_forecasting.py
 │   ├── requirements.txt
-│   └── seed_data.py
+│   ├── seed_data.py
+│   └── research/
+│       └── sistem_peramalan_(forecasting)_penjualan_toko.py
 ├── kriyalogic-backend/
 │   ├── src/
 │   │   ├── controllers/
