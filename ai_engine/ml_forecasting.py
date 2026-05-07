@@ -58,7 +58,7 @@ def connect_to_mongodb(retry_count=0):
         print("✓ MongoDB connected successfully")
         return client, db
         
-    except (ConnectionFailure, ServerSelectionTimeoutException) as e:
+    except (ConnectionFailure, ServerSelectionTimeoutError) as e:
         print(f"⚠ Connection failed: {str(e)}")
         
         if retry_count < RETRY_ATTEMPTS - 1:
