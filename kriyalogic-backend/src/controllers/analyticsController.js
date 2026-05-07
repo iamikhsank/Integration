@@ -48,6 +48,7 @@ const getAnalyticsSummary = async (req, res) => {
       {
         $group: {
           _id: null,
+          totalQuantity: { $sum: '$quantity' },
           totalRevenue: { $sum: '$totalSales' },
           totalCommissionExpenses: {
             $sum: { $add: ['$artisanCommission', '$guideCommission'] }
@@ -138,6 +139,7 @@ const getAnalyticsSummary = async (req, res) => {
 
     // Prepare response
     const summary = {
+      totalQuantity: analyticsTotals[0]?.totalQuantity || 0,
       totalRevenue: analyticsTotals[0]?.totalRevenue || 0,
       totalCommissionExpenses: analyticsTotals[0]?.totalCommissionExpenses || 0,
       netProfit: analyticsTotals[0]?.netProfit || 0,

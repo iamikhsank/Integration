@@ -29,11 +29,11 @@ import {
 const generateAIInsight = (productName, trend) => {
   switch (trend) {
     case 'up':
-      return `Stock for ${productName} should be increased as recent demand is showing a significant upward trend.`;
+      return `Stock for ${productName} should be increased as recent quantity is showing a significant upward trend.`;
     case 'down':
-      return `Consider reducing the inventory for ${productName} as the forecasted demand is declining.`;
+      return `Consider reducing the inventory for ${productName} as the forecasted quantity is declining.`;
     default:
-      return `Demand for ${productName} is projected to remain stable.`;
+      return `Quantity for ${productName} is projected to remain stable.`;
   }
 };
 
@@ -110,7 +110,7 @@ const ForecastPage = () => {
           // Transform data for chart
           const transformedData = result.data.map(item => ({
             date: new Date(item.forecast_date).toLocaleDateString('id-ID'),
-            predicted: item.predicted_demand,
+            predicted: item.predicted_quantity,
             lower: item.lower_bound_estimate,
             upper: item.upper_bound_estimate,
             fullDate: item.forecast_date
@@ -156,9 +156,9 @@ const ForecastPage = () => {
       return (
         <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-semibold text-gray-800">{`Date: ${label}`}</p>
-          <p className="text-blue-600">{`Predicted: Rp ${data.predicted.toLocaleString()}`}</p>
-          <p className="text-green-600">{`Lower: Rp ${data.lower.toLocaleString()}`}</p>
-          <p className="text-red-600">{`Upper: Rp ${data.upper.toLocaleString()}`}</p>
+          <p className="text-blue-600">{`Predicted: ${data.predicted.toLocaleString()}`}</p>
+          <p className="text-green-600">{`Lower: ${data.lower.toLocaleString()}`}</p>
+          <p className="text-red-600">{`Upper: ${data.upper.toLocaleString()}`}</p>
         </div>
       );
     }
@@ -240,9 +240,9 @@ const ForecastPage = () => {
             <div className="flex items-center">
               <DollarSign className="h-8 w-8 text-[#FF6900] mr-3" />
               <div>
-                <p className="text-sm font-medium text-[#4E3629]">Total Predicted Demand</p>
+                <p className="text-sm font-medium text-[#4E3629]">Total Predicted Quantity</p>
                 <p className="text-2xl font-bold text-[#3D312B]">
-                  Rp {totalPredicted.toLocaleString()}
+                  {totalPredicted.toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500">Next 30 days</p>
               </div>
@@ -255,7 +255,7 @@ const ForecastPage = () => {
               <div>
                 <p className="text-sm font-medium text-[#4E3629]">Average Confidence Range</p>
                 <p className="text-2xl font-bold text-[#3D312B]">
-                  Rp {avgConfidence.toLocaleString()}
+                  {avgConfidence.toLocaleString()}
                 </p>
                 <p className="text-xs text-gray-500">Prediction margin</p>
               </div>
@@ -361,7 +361,7 @@ const ForecastPage = () => {
                     stroke="#FF6900"
                     strokeWidth={2}
                     strokeDasharray="5 5"
-                    name="Predicted Demand"
+                    name="Predicted Quantity"
                     dot={{ fill: '#FF6900', strokeWidth: 2, r: 4 }}
                   />
                 </ComposedChart>
@@ -371,7 +371,7 @@ const ForecastPage = () => {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <div className="w-4 h-0.5 bg-[#FF6900] mr-2" style={{borderStyle: 'dashed'}}></div>
-                  <span>Predicted Demand</span>
+                  <span>Predicted Quantity</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-4 h-2 bg-[#FFD9B3] mr-2"></div>
@@ -416,16 +416,16 @@ const ForecastPage = () => {
                         {item.date}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
-                        Rp {item.predicted.toLocaleString()}
+                        {item.predicted.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
-                        Rp {item.lower.toLocaleString()}
+                        {item.lower.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
-                        Rp {item.upper.toLocaleString()}
+                        {item.upper.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-[#3D312B]">
-                        Rp {(item.upper - item.lower).toLocaleString()}
+                        {(item.upper - item.lower).toLocaleString()}
                       </td>
                     </tr>
                   ))}

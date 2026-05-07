@@ -13,7 +13,8 @@ import {
   TrendingUp,
   ShieldCheck,
   Sparkles,
-  ArrowUpRight
+  ArrowUpRight,
+  Package
 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
@@ -24,6 +25,7 @@ const formatRupiah = (value) => {
 };
 
 const mockData = {
+  totalQuantity: 289,
   totalRevenue: 178500000,
   totalCommissionExpenses: 24250000,
   netProfit: 94500000,
@@ -119,6 +121,7 @@ const AnalyticsReport = () => {
   }, [fromDate, toDate]);
 
   const {
+    totalQuantity,
     totalRevenue,
     totalCommissionExpenses,
     netProfit,
@@ -183,6 +186,23 @@ const AnalyticsReport = () => {
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-2">
+            <div className="rounded-3xl border border-[#A97A47] bg-[#FFF0E6] p-6 shadow-sm col-span-full">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-[#4E3629]">Total Quantity Sold</p>
+                  <p className="mt-3 text-3xl font-semibold text-[#3D312B]">
+                    {totalQuantity?.toLocaleString('id-ID')} <span className="text-lg">units</span>
+                  </p>
+                </div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FF6900] text-white">
+                  <Package className="h-5 w-5" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm text-[#4E3629]">
+                Total number of products sold across the analytics period.
+              </p>
+            </div>
+
             <div className="rounded-3xl border border-[#A97A47] bg-[#FFFFFF] p-6 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>

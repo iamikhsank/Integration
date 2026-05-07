@@ -54,17 +54,18 @@ async function seedForecastResults() {
           const forecastDate = new Date(data['Tanggal']);
           const parentCode = productCodes[productIndex % productCodes.length];
 
-          // Parse the amount (it's numeric already based on the CSV)
-          const predictedDemand = parseInt(data['Total (Rp)']) || 0;
+          // Parse the amount and calculate a mock quantity
+          const baseAmount = parseInt(data['Total (Rp)']) || 0;
+          const predictedQuantity = Math.max(1, Math.round(baseAmount / 50000));
           
           // Create bounds (±15% of predicted value)
-          const lowerBound = Math.round(predictedDemand * 0.85);
-          const upperBound = Math.round(predictedDemand * 1.15);
+          const lowerBound = Math.round(predictedQuantity * 0.85);
+          const upperBound = Math.round(predictedQuantity * 1.15);
 
           const record = {
             product_code: parentCode,
             forecast_date: forecastDate,
-            predicted_demand: predictedDemand,
+            predicted_quantity: predictedQuantity,
             lower_bound_estimate: lowerBound,
             upper_bound_estimate: upperBound,
             last_updated: new Date()
