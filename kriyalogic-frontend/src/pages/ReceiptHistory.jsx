@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useReceiptHistories from '../hooks/useReceiptHistories';
 import useReceiptHistoryDetail from '../hooks/useReceiptHistoryDetail';
 import { useAuth } from '../context/AuthContext';
-import logoImage from '../../public/logo.png';
+const logoImage = '/logo.png';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
 import toast from 'react-hot-toast';

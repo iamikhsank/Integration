@@ -14,7 +14,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import useCheckout from '../hooks/useCheckout';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-import logoImage from '../../public/logo.png';
+const logoImage = '/logo.png';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
 

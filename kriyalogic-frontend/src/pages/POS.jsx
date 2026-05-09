@@ -17,7 +17,7 @@ import useCategories from '../hooks/useCategories';
 import useProducts from '../hooks/useProducts';
 import useGuides from '../hooks/useTourGuides';
 import allIcon from '../assets/all_icon.svg';
-import defaultImage from '../../public/default_image.png';
+const defaultImage = '/default_image.png';
 
 const formatRupiah = (value) => {
     return `Rp. ${Number(value || 0).toLocaleString('id-ID')}`;

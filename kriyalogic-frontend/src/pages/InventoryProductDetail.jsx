@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ArrowLeft, Search } from 'lucide-react';
 import useDetailParentProduct from '../hooks/useDetailParentProduct';
 import { useNavigate } from 'react-router-dom';
-import defaultImage from '../../public/default_image.png';
+const defaultImage = '/default_image.png';
 
 const InventoryProductDetail = () => {
     const navigate = useNavigate();
