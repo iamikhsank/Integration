@@ -110,7 +110,7 @@ const ForecastPage = () => {
           // Transform data for chart
           const transformedData = result.data.map(item => ({
             date: new Date(item.forecast_date).toLocaleDateString('id-ID'),
-            predicted: item.predicted_quantity,
+            predicted: item.predicted_demand,
             lower: item.lower_bound_estimate,
             upper: item.upper_bound_estimate,
             fullDate: item.forecast_date
